@@ -94,6 +94,8 @@ private:
     QString         atProgramPath;
     QString         fwPath;
 
+    QString         fuseH, fuseL, fuseE;
+
     QProcess *      programmerProc = nullptr;
 };
 

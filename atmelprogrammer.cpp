@@ -122,7 +122,16 @@ bool AtmelProgrammer::program()
 
 bool AtmelProgrammer::chiperase()
 {
-    return false;
+    if (!isConfigured()) {
+        qDebug() << "Programmer " << prgrmrIndex << " not configured!";
+        return false;
+    }
+
+    if (executeCommand("chiperase")) {
+        qDebug() << "OK";
+    }
+
+    return true;
 }
 
 bool AtmelProgrammer::verify()

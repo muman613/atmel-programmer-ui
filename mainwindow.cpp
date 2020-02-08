@@ -72,6 +72,8 @@ MainWindow::MainWindow(QWidget *parent)
         UpdateUI();
     });
 #endif
+
+    connect(ui->deviceId, &QComboBox::currentTextChanged, this, &MainWindow::on_deviceChange);
 }
 
 MainWindow::~MainWindow()
@@ -301,12 +303,11 @@ void MainWindow::on_actionClear_Console_triggered()
     ui->consoleText->clear();
 }
 
-//void MainWindow::on_deviceId_currentTextChanged(const QString &arg1)
-//{
-//    qDebug() << "User selected device" << arg1;
-
-//    Prgrmr0.setDeviceId(arg1);
-//}
+void MainWindow::on_deviceChange(const QString &arg1)
+{
+    qDebug() << "User selected device" << arg1;
+    Prgrmr0.setDeviceId(arg1);
+}
 
 void MainWindow::on_actionSave_Console_to_file_triggered()
 {
@@ -345,6 +346,6 @@ void MainWindow::parmsChanged(int index)
         break;
     }
 
-//    ui->firmwareName->setText(programmer->getFirmware());
-//    ui->deviceId->setCurrentText(programmer->getDeviceId());
+    ui->firmwareName->setText(programmer->getFirmware());
+    ui->deviceId->setCurrentText(programmer->getDeviceId());
 }

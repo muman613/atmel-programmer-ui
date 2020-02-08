@@ -30,6 +30,7 @@ private slots:
     void on_eraseButton_clicked();
     void on_actionClear_Console_triggered();
 //    void on_deviceId_currentTextChanged(const QString &arg1);
+    void on_deviceChange(const QString & arg1);
     void on_actionSave_Console_to_file_triggered();
     void on_infoButton_clicked();
     void on_actionAbout_triggered();
