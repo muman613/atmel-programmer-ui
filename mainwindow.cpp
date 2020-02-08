@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QSettings>
 #include <QMessageBox>
+#include <QTimer>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -12,15 +13,23 @@ QStringList supportedDevices = {
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    , ui(new Ui::MainWindow),
+      Prgrmr0(this, 0),
+      Prgrmr1(this, 1),
+      Prgrmr2(this, 2)
 {
-    QSettings iniSettings;
-
     ui->setupUi(this);
 
     for (auto device : supportedDevices) {
         ui->deviceId->addItem(device);
     }
+
+    connect(&Prgrmr0, &AtmelProgrammer::parmsChanged, this, &MainWindow::parmsChanged);
+
+#if 0
+    QSettings iniSettings;
+
+
 
     // Load settings from persistent storage, if not set use defaults...
     fwPath          = iniSettings.value("fwPath").toString();
@@ -34,13 +43,40 @@ MainWindow::MainWindow(QWidget *parent)
 
     if (QFile::exists(atProgramPath)) {
         ui->consoleText->append("Programmer executable exists!");
+        executeCommand("version");
+        getProgrammerList();
     } else {
         ui->consoleText->append("Programmer executable not found!");
+        enableControls(false);
     }
+#endif
+
+    getProgrammerList();
+
+    for (auto prgrmr : programmerList) {
+        QString progName = prgrmr.first,
+                progSN   = prgrmr.second;
+
+        qDebug() << "name " << progSN << " SN " << progSN;
+
+        if (progName != "simulator") {
+            Prgrmr0.setSerialNum(progSN);
+            break;
+        }
+    }
+
+#if 1
+    UpdateUI();
+#else
+    QTimer::singleShot(1000, this, [=]() {
+        UpdateUI();
+    });
+#endif
 }
 
 MainWindow::~MainWindow()
 {
+#if 0
     QSettings iniSettings;
 
     iniSettings.setValue("fwPath",      QVariant(fwPath));
@@ -48,16 +84,16 @@ MainWindow::~MainWindow()
     iniSettings.setValue("progTool",    QVariant(progTool));
     iniSettings.setValue("deviceId",    QVariant(deviceId));
     iniSettings.setValue("progIF",      QVariant(progIF));
-
+#endif
     delete ui;
 }
 
 
 void MainWindow::on_browseButton_clicked()
 {
+    qDebug() << Q_FUNC_INFO;
     QFileDialog     chooseFile(this, "Select Firmware File");
 
-    qDebug() << Q_FUNC_INFO;
 
     chooseFile.setNameFilter(tr("Hex (*.hex)"));
     chooseFile.setViewMode(QFileDialog::Detail);
@@ -65,7 +101,8 @@ void MainWindow::on_browseButton_clicked()
 
     if (chooseFile.exec()) {
         QStringList FileNames = chooseFile.selectedFiles();
-        fwPath = FileNames[0];
+        QString fwPath = FileNames[0];
+        Prgrmr0.setFirmware(fwPath);
         qDebug() << "Firmware path =" << fwPath;
         ui->firmwareName->setText(fwPath);
     }
@@ -75,14 +112,16 @@ void MainWindow::on_browseButton_clicked()
 void MainWindow::on_infoButton_clicked()
 {
     qDebug() << Q_FUNC_INFO;
-
+#if 0
     if (executeCommand("info")) {
         qDebug() << "OK";
     }
+#endif
 }
 
 void MainWindow::on_programButton_clicked()
 {
+#if 0
     QStringList extraArgs;
 
     extraArgs.append("-fl");        // Verify Flash memory
@@ -94,11 +133,12 @@ void MainWindow::on_programButton_clicked()
     if (executeCommand("program", &extraArgs)) {
 
     }
-
+#endif
 }
 
 void MainWindow::on_verifyButton_clicked()
 {
+#if 0
     QStringList extraArgs;
 
     extraArgs.append("-fl");        // Verify Flash memory
@@ -108,15 +148,21 @@ void MainWindow::on_verifyButton_clicked()
     if (executeCommand("verify", &extraArgs)) {
 
     }
+#endif
 }
 
 void MainWindow::on_eraseButton_clicked()
 {
+#if 1
+    Prgrmr0.chiperase();
+#else
     if (executeCommand("chiperase")) {
         qDebug() << "OK";
     }
+#endif
 }
 
+#if 0
 bool MainWindow::executeCommand(const QString &command, QStringList * extraArgs)
 {
     if (cmdInProgress || (programmerProc != nullptr)) {
@@ -177,10 +223,9 @@ bool MainWindow::executeCommand(const QString &command, QStringList * extraArgs)
     qDebug() << programmerProc->arguments();
     programmerProc->start();
 
-//    programmerProc->waitForStarted();
-
     return true;
 }
+#endif
 
 void MainWindow::enableControls(bool en)
 {
@@ -192,6 +237,7 @@ void MainWindow::enableControls(bool en)
     ui->firmwareName->setEnabled(en);
 }
 
+#if 0
 typedef struct _codeEntry {
     int         code;
     QString     msg;
@@ -226,18 +272,41 @@ QString MainWindow::exitCodeToString(int code)
 
     return "Unrecognized Error Code";
 }
+#endif
+
+/**
+ * @brief MainWindow::getProgrammerList gets the list of programmers connected.
+ *
+ * @return
+ */
+bool MainWindow::getProgrammerList()
+{
+    AtmelProgrammer::getProgrammerList(programmerList);
+
+    qDebug() << programmerList;
+
+    return true;
+}
+
+void MainWindow::UpdateUI()
+{
+    qDebug() << Q_FUNC_INFO;
+
+    ui->firmwareName->setText(Prgrmr0.getFirmware());
+    ui->deviceId->setCurrentText(Prgrmr0.getDeviceId());
+}
 
 void MainWindow::on_actionClear_Console_triggered()
 {
     ui->consoleText->clear();
 }
 
-void MainWindow::on_deviceId_currentTextChanged(const QString &arg1)
-{
-    qDebug() << "User selected device" << arg1;
+//void MainWindow::on_deviceId_currentTextChanged(const QString &arg1)
+//{
+//    qDebug() << "User selected device" << arg1;
 
-    deviceId = arg1;
-}
+//    Prgrmr0.setDeviceId(arg1);
+//}
 
 void MainWindow::on_actionSave_Console_to_file_triggered()
 {
@@ -256,4 +325,26 @@ void MainWindow::on_actionSave_Console_to_file_triggered()
 void MainWindow::on_actionAbout_triggered()
 {
     QMessageBox::about(this, "Atmel Programmer", "(C) 2020 Wunder-Bar\nProgrammer : Michael Uman");
+}
+
+void MainWindow::parmsChanged(int index)
+{
+    qDebug() << Q_FUNC_INFO << index;
+
+    AtmelProgrammer * programmer = nullptr;
+
+    switch (index) {
+    case 0:
+        programmer = &Prgrmr0;
+        break;
+    case 1:
+        programmer = &Prgrmr1;
+        break;
+    case 2:
+        programmer = &Prgrmr2;
+        break;
+    }
+
+//    ui->firmwareName->setText(programmer->getFirmware());
+//    ui->deviceId->setCurrentText(programmer->getDeviceId());
 }
