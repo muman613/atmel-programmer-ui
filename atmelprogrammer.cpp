@@ -106,6 +106,7 @@ bool AtmelProgrammer::isConfigured() const
 bool AtmelProgrammer::program()
 {
     QStringList extraArgs;
+    qDebug() << Q_FUNC_INFO;
 
     extraArgs.append("-fl");        // Verify Flash memory
     extraArgs.append("-e");
@@ -151,6 +152,8 @@ bool AtmelProgrammer::verify()
 
 bool AtmelProgrammer::executeCommand(const QString &command, QStringList * extraArgs)
 {
+    QMutexLocker        lock(&prgrmrMutex);
+
     if (cmdInProgress || (programmerProc != nullptr)) {
         qDebug() << "Attempted to start command while previous command in progress...";
         return false;

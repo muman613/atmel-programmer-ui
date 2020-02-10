@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QObject>
 #include <QProcess>
+#include <QMutex>
 
 using prgrmrPair = QPair<QString, QString>;
 using prgrmrPairList = QList<prgrmrPair>;
@@ -97,6 +98,7 @@ private:
     QString         fuseH, fuseL, fuseE;
 
     QProcess *      programmerProc = nullptr;
+    QMutex          prgrmrMutex;
 };
 
 #endif // ATMELPROGRAMMER_H
