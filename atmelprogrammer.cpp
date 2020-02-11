@@ -7,29 +7,7 @@ AtmelProgrammer::AtmelProgrammer(QObject *parent, int index)
       prgrmrIndex(index),
       atProgramPath("atprogram.exe")
 {
-    QSettings iniSettings;
 
-    iniSettings.beginGroup(QString("Programmer%1").arg(prgrmrIndex));
-
-    // Load settings from persistent storage, if not set use defaults...
-    // "D:/Program Files (x86)/Atmel/Studio/7.0/atbackend/atprogram.exe"
-    fwPath          = iniSettings.value("fwPath").toString();
-    atProgramPath   = iniSettings.value("atprogram",    "atprogram.exe").toString();
-    progTool        = iniSettings.value("progTool",     "atmelice").toString();
-    deviceId        = iniSettings.value("deviceId",     "atmega328p").toString();
-    progIF          = iniSettings.value("progIF",       "isp").toString();
-    progSN          = iniSettings.value("ProgSN").toString();
-
-    iniSettings.endGroup();
-
-    qDebug() << "------------------------------";
-    qDebug() << "Index" << index;
-    qDebug() << "fwPath " << fwPath;
-    qDebug() << "progTool" << progTool;
-    qDebug() << "deviceId" << deviceId;
-    qDebug() << "progIF" << progIF;
-    qDebug() << "progSN" << progSN;
-    qDebug() << "------------------------------";
 }
 
 AtmelProgrammer::~AtmelProgrammer()
@@ -46,6 +24,35 @@ AtmelProgrammer::~AtmelProgrammer()
     iniSettings.setValue("ProgSN",      QVariant(progSN));
 
     iniSettings.endGroup();
+}
+
+void AtmelProgrammer::initialize()
+{
+    QSettings iniSettings;
+
+    iniSettings.beginGroup(QString("Programmer%1").arg(prgrmrIndex));
+
+    // Load settings from persistent storage, if not set use defaults...
+    // "D:/Program Files (x86)/Atmel/Studio/7.0/atbackend/atprogram.exe"
+    fwPath          = iniSettings.value("fwPath").toString();
+    atProgramPath   = iniSettings.value("atprogram",    "atprogram.exe").toString();
+    progTool        = iniSettings.value("progTool",     "atmelice").toString();
+    deviceId        = iniSettings.value("deviceId",     "atmega328p").toString();
+    progIF          = iniSettings.value("progIF",       "isp").toString();
+    progSN          = iniSettings.value("ProgSN").toString();
+
+    iniSettings.endGroup();
+
+    qDebug() << "------------------------------";
+    qDebug() << "Index" << prgrmrIndex;
+    qDebug() << "fwPath " << fwPath;
+    qDebug() << "progTool" << progTool;
+    qDebug() << "deviceId" << deviceId;
+    qDebug() << "progIF" << progIF;
+    qDebug() << "progSN" << progSN;
+    qDebug() << "------------------------------";
+
+    emit parmsChanged(prgrmrIndex);
 }
 
 typedef struct _codeEntry {
@@ -240,7 +247,10 @@ bool AtmelProgrammer::getProgrammerList(prgrmrPairList & prgrmrlist)
 
         qDebug() << "name" << name << "s/n" << sn;
 
-        prgrmrlist.push_back(prgrmrPair(name,sn));
+        // skip 'simulator' entry in programmer list...
+        if (name != "simulator") {
+            prgrmrlist.push_back(prgrmrPair(name,sn));
+        }
     }
 
     return true;

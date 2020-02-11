@@ -6,15 +6,31 @@
 #include <QProcess>
 #include <QMutex>
 
+class AtmelProgrammer;
+
 using prgrmrPair = QPair<QString, QString>;
 using prgrmrPairList = QList<prgrmrPair>;
+
+using prgrmrVec = QVector<AtmelProgrammer *>;
 
 class AtmelProgrammer : public QObject
 {
     Q_OBJECT
 public:
+
+    enum streamId {
+        STREAM_STDOUT,
+        STREAM_STDERR,
+    };
+
     explicit AtmelProgrammer(QObject *parent = nullptr, int index = 0);
     ~AtmelProgrammer();
+
+    void            initialize();
+
+    int             index() const {
+        return prgrmrIndex;
+    }
 
     static bool     getProgrammerList(prgrmrPairList & prgrmrlist);
 
@@ -27,8 +43,11 @@ public:
     bool            isConfigured() const;
 
     void            setFirmware(const QString & firmwarePath) {
-        fwPath = firmwarePath;
-        emit parmsChanged(prgrmrIndex);
+        if (firmwarePath != fwPath) {
+            qDebug() << "Firmware changed to" << firmwarePath;
+            fwPath = firmwarePath;
+            emit parmsChanged(prgrmrIndex);
+        }
     }
 
     QString         getFirmware() const {
@@ -36,8 +55,11 @@ public:
     }
 
     void            setTool(const QString & tool) {
-        progTool = tool;
-        emit parmsChanged(prgrmrIndex);
+        if (tool != progTool) {
+            qDebug() << "Tool changed to" << tool;
+            progTool = tool;
+            emit parmsChanged(prgrmrIndex);
+        }
     }
 
     QString         getTool() const {
@@ -45,8 +67,11 @@ public:
     }
 
     void            setInterface(const QString & interface) {
-        progIF = interface;
-        emit parmsChanged(prgrmrIndex);
+        if (interface != progIF) {
+            qDebug() << "Interface changed to" << interface;
+            progIF = interface;
+            emit parmsChanged(prgrmrIndex);
+        }
     }
 
     QString         getInterface() const {
@@ -54,9 +79,11 @@ public:
     }
 
     void            setSerialNum(const QString & serialNum) {
-        qDebug() << "Serialnumber changed to" << serialNum;
-        progSN = serialNum;
-        emit parmsChanged(prgrmrIndex);
+        if (progSN != serialNum) {
+            qDebug() << "Serialnumber changed to" << serialNum;
+            progSN = serialNum;
+            emit parmsChanged(prgrmrIndex);
+        }
     }
 
     QString         getSerialNum() const {
@@ -64,9 +91,11 @@ public:
     }
 
     void            setDeviceId(const QString & devid) {
-        qDebug() << Q_FUNC_INFO;
-        deviceId = devid;
-        emit parmsChanged(prgrmrIndex);
+        if (devid != deviceId) {
+            qDebug() << Q_FUNC_INFO;
+            deviceId = devid;
+            emit parmsChanged(prgrmrIndex);
+        }
     }
 
     QString         getDeviceId() const {
@@ -77,7 +106,7 @@ signals:
     void            commandStart(int index, QString command);
     void            commandEnd(int index, QString command);
     void            parmsChanged(int index);
-    void            statusText(int index, QByteArray text);
+    void            statusText(int index, AtmelProgrammer::streamId id,  QByteArray text);
 
 private:
     int             prgrmrIndex = 0;

@@ -5,6 +5,7 @@
 #include <QString>
 #include <QProcess>
 #include <QPair>
+#include <QVector>
 
 #include "atmelprogrammer.h"
 
@@ -12,8 +13,7 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-using prgrmrPair = QPair<QString, QString>;
-using prgrmrPairList = QList<prgrmrPair>;
+
 
 class MainWindow : public QMainWindow
 {
@@ -24,18 +24,18 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_browseButton_clicked();
-    void on_programButton_clicked();
-    void on_verifyButton_clicked();
-    void on_eraseButton_clicked();
+//    void on_browseButton_clicked();
+//    void on_programButton_clicked();
+//    void on_verifyButton_clicked();
+//    void on_eraseButton_clicked();
     void on_actionClear_Console_triggered();
 //    void on_deviceId_currentTextChanged(const QString &arg1);
-    void on_deviceChange(const QString & arg1);
+//    void on_deviceChange(const QString & arg1);
     void on_actionSave_Console_to_file_triggered();
-    void on_infoButton_clicked();
+//    void on_infoButton_clicked();
     void on_actionAbout_triggered();
 
-    void parmsChanged(int index);
+//    void parmsChanged(int index);
 
 protected:
 
@@ -49,12 +49,15 @@ protected:
 private:
     Ui::MainWindow *ui;
 
-    AtmelProgrammer     Prgrmr0;
-    AtmelProgrammer     Prgrmr1;
-    AtmelProgrammer     Prgrmr2;
+    prgrmrVec           programmers;
+//    AtmelProgrammer     Prgrmr0;
+//    AtmelProgrammer     Prgrmr1;
+//    AtmelProgrammer     Prgrmr2;
 
-    void                UpdateUI();
+//    void                UpdateUI();
     prgrmrPairList      programmerList;
+
+    void                allocateProgrammers();
 
 };
 #endif // MAINWINDOW_H

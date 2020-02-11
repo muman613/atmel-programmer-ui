@@ -6,87 +6,223 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>821</width>
-    <height>649</height>
+    <width>800</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Atmel Programmer</string>
+   <string>Wunder-Bar Atmel Multi-Programmer</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>FW File Selection :</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLineEdit" name="firmwareName"/>
-      </item>
-      <item>
-       <widget class="QPushButton" name="browseButton">
-        <property name="text">
-         <string>Browse</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QComboBox" name="deviceId">
-        <property name="currentText">
-         <string/>
-        </property>
-       </widget>
-      </item>
-     </layout>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QGroupBox" name="programmer1">
+      <property name="title">
+       <string>Programmer #1</string>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_8">
+       <item>
+        <widget class="QComboBox" name="id_1">
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Serial # of AtmelICE Programmer</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="device_1">
+         <property name="minimumSize">
+          <size>
+           <width>90</width>
+           <height>0</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="fw_1"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="browse_1">
+         <property name="text">
+          <string>Browse</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="options_1">
+         <property name="text">
+          <string>Options</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </item>
-    <item row="0" column="0">
-     <widget class="QTextEdit" name="consoleText">
+    <item>
+     <widget class="QGroupBox" name="programmer2">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="title">
+       <string>Programmer #2</string>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_9">
+       <item>
+        <widget class="QComboBox" name="id_2">
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Serial # of AtmelICE Programmer</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="device_2">
+         <property name="minimumSize">
+          <size>
+           <width>90</width>
+           <height>0</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="fw_2"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="browse_2">
+         <property name="text">
+          <string>Browse</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="options_2">
+         <property name="text">
+          <string>Options</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="programmer3">
+      <property name="title">
+       <string>Programmer #3</string>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_10">
+       <item>
+        <widget class="QComboBox" name="id_3">
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Serial # of AtmelICE Programmer</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="device_3">
+         <property name="minimumSize">
+          <size>
+           <width>90</width>
+           <height>0</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="fw_3"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="browse_3">
+         <property name="text">
+          <string>Browse</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="options_3">
+         <property name="text">
+          <string>Options</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="programButton">
       <property name="font">
        <font>
-        <family>Courier New</family>
-        <pointsize>10</pointsize>
+        <family>Verdana</family>
+        <pointsize>12</pointsize>
        </font>
       </property>
-      <property name="readOnly">
-       <bool>true</bool>
+      <property name="text">
+       <string>PROGRAM</string>
       </property>
      </widget>
     </item>
-    <item row="3" column="0" rowspan="2">
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item>
-       <widget class="QPushButton" name="infoButton">
-        <property name="text">
-         <string>Get Info</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="programButton">
-        <property name="text">
-         <string>Program Chip</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="verifyButton">
-        <property name="text">
-         <string>Verify Firmware</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="eraseButton">
-        <property name="text">
-         <string>Erase Chip</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+    <item>
+     <widget class="QPushButton" name="verifyButton">
+      <property name="font">
+       <font>
+        <family>Verdana</family>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>VERIFY</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="groupBox">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="title">
+       <string>Output</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QTextEdit" name="console">
+         <property name="font">
+          <font>
+           <family>DejaVu Sans Mono</family>
+          </font>
+         </property>
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -95,16 +231,22 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>821</width>
+     <width>800</width>
      <height>22</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile">
+   <widget class="QMenu" name="menu_File">
     <property name="title">
      <string>&amp;File</string>
     </property>
+    <addaction name="actionRescan_for_programmers"/>
     <addaction name="actionClear_Console"/>
     <addaction name="actionSave_Console_to_file"/>
+   </widget>
+   <widget class="QMenu" name="menu_Edit">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
    </widget>
    <widget class="QMenu" name="menu_Help">
     <property name="title">
@@ -112,10 +254,16 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
-   <addaction name="menuFile"/>
+   <addaction name="menu_File"/>
+   <addaction name="menu_Edit"/>
    <addaction name="menu_Help"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionRescan_for_programmers">
+   <property name="text">
+    <string>Rescan for programmers...</string>
+   </property>
+  </action>
   <action name="actionClear_Console">
    <property name="text">
     <string>Clear Console</string>
@@ -123,12 +271,12 @@
   </action>
   <action name="actionSave_Console_to_file">
    <property name="text">
-    <string>Save Console to file...</string>
+    <string>Save Console to file</string>
    </property>
   </action>
   <action name="actionAbout">
    <property name="text">
-    <string>About...</string>
+    <string>About</string>
    </property>
   </action>
  </widget>
