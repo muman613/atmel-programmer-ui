@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>320</width>
+    <height>193</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -42,18 +42,21 @@
          <enum>QFrame::Raised</enum>
         </property>
         <layout class="QGridLayout" name="gridLayout">
-         <item row="2" column="1">
-          <widget class="QLineEdit" name="lfuse"/>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_4">
+           <property name="layoutDirection">
+            <enum>Qt::LeftToRight</enum>
+           </property>
+           <property name="text">
+            <string>EFuse :</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
          </item>
          <item row="1" column="1">
           <widget class="QLineEdit" name="hfuse"/>
-         </item>
-         <item row="0" column="1">
-          <widget class="QComboBox" name="ifCombo">
-           <property name="frame">
-            <bool>true</bool>
-           </property>
-          </widget>
          </item>
          <item row="3" column="1">
           <widget class="QLineEdit" name="efuse"/>
@@ -97,16 +100,32 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="label_4">
+         <item row="2" column="1">
+          <widget class="QLineEdit" name="lfuse"/>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="ifCombo">
+           <property name="frame">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QCheckBox" name="verboseCheck">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="toolTip">
+            <string>Enable verbose debug logging</string>
+           </property>
            <property name="layoutDirection">
             <enum>Qt::LeftToRight</enum>
            </property>
-           <property name="text">
-            <string>EFuse :</string>
+           <property name="autoFillBackground">
+            <bool>false</bool>
            </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           <property name="text">
+            <string>Verbose Logging</string>
            </property>
           </widget>
          </item>

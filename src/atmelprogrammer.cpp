@@ -5,6 +5,41 @@
 #include "atmelprogrammer.h"
 
 
+QDebug operator<<(QDebug debug, const AtmelProgrammer &p)
+{
+    QDebugStateSaver save(debug);
+
+    debug.nospace();
+    debug.noquote();
+
+#if 1
+    debug << "( Programmer ";
+    debug << p.prgrmrIndex << " TOOL : " << p.progTool << " | IF : " << p.progIF << " | SN : " << p.progSN << " )";
+#else
+    debug.noquote();
+    debug.nospace();
+
+    debug << "Programmer " << p.prgrmrIndex << ":" << "\n";
+    debug << QString("-").repeated(20) << "\n";
+
+    debug << "programmerPath : " << p.atProgramPath << "\n";
+    debug << "fwPath         : " << p.fwPath << "\n";
+    debug << "progTool       : " << p.progTool << "\n";
+    debug << "deviceId       : " << p.deviceId << "\n";
+    debug << "Interface      : " << p.progIF << "\n";
+    debug << "serialNum      : " << p.progSN << "\n";
+    debug << "verbose        : " << p.verbose << "\n";
+
+    debug << QString("-").repeated(20) << "\n";
+#endif
+
+    return debug;
+}
+
+/**
+ * List of supported devices.
+ */
+
 static QStringList supportedDevices = {
     "atmega162",
     "atmega328p",
@@ -12,6 +47,11 @@ static QStringList supportedDevices = {
     "atmega2560"
 };
 
+/**
+ * @brief AtmelProgrammer Constructor
+ * @param parent
+ * @param index
+ */
 AtmelProgrammer::AtmelProgrammer(QObject *parent, int index)
     : QObject(parent),
       prgrmrIndex(index),
@@ -37,6 +77,10 @@ AtmelProgrammer::~AtmelProgrammer()
     iniSettings.endGroup();
 }
 
+/**
+ * @brief Add supported devices to the combobox...
+ * @param pComboBox
+ */
 void AtmelProgrammer::addSupportedDevices(QComboBox *pComboBox)
 {
     pComboBox->clear();
@@ -45,8 +89,15 @@ void AtmelProgrammer::addSupportedDevices(QComboBox *pComboBox)
     }
 }
 
+/**
+ * @brief Retreive settings from the persistant storage (QSettings)
+ *
+ * NOTE: The path to `atprogram.exe` should be in the path environment.
+ */
 void AtmelProgrammer::initialize()
 {
+    qDebug() << Q_FUNC_INFO;
+
     QSettings iniSettings;
 
     iniSettings.beginGroup(QString("Programmer%1").arg(prgrmrIndex));
@@ -63,6 +114,7 @@ void AtmelProgrammer::initialize()
 
     iniSettings.endGroup();
 
+#if 0
     qDebug() << "------------------------------";
     qDebug() << "Index" << prgrmrIndex;
     qDebug() << "fwPath " << fwPath;
@@ -71,6 +123,7 @@ void AtmelProgrammer::initialize()
     qDebug() << "progIF" << progIF;
     qDebug() << "progSN" << progSN;
     qDebug() << "------------------------------";
+#endif
 
     emit parmsChanged(prgrmrIndex);
 }
@@ -206,10 +259,10 @@ bool AtmelProgrammer::executeCommand(const QString &command, QStringList * extra
             [=](int exitCode, QProcess::ExitStatus exitStatus) {
                 QString exitMsg = exitCodeToString(exitCode);
                 qDebug() << "Process finished" << exitMsg << exitStatus;
-                if (exitCode != 0) {
-                    QByteArray stdErr = programmerProc->readAllStandardError();
-                    emit statusText(prgrmrIndex, AtmelProgrammer::STREAM_STDERR, stdErr);
-                }
+//                if (exitCode != 0) {
+//                    QByteArray stdErr = programmerProc->readAllStandardError();
+//                    emit statusText(prgrmrIndex, AtmelProgrammer::STREAM_STDERR, stdErr);
+//                }
                 delete programmerProc;
                 programmerProc = nullptr;
                 cmdInProgress = false;
@@ -223,11 +276,12 @@ bool AtmelProgrammer::executeCommand(const QString &command, QStringList * extra
         emit statusText(prgrmrIndex, AtmelProgrammer::STREAM_STDOUT, stdOut);
     });
 
-    connect(programmerProc, &QProcess::readyReadStandardOutput, [=]() {
-        QByteArray stdOut = programmerProc->readAllStandardOutput();
-        qDebug() << stdOut;
-        emit statusText(prgrmrIndex, AtmelProgrammer::STREAM_STDOUT, stdOut);
+    connect(programmerProc, &QProcess::readyReadStandardError, [=]() {
+        QByteArray stdErr = programmerProc->readAllStandardError();
+        qDebug() << stdErr;
+        emit statusText(prgrmrIndex, AtmelProgrammer::STREAM_STDERR, stdErr);
     });
+
     QStringList argList;
 
     // If verbose flag is set, pass -v to atprogram.exe
