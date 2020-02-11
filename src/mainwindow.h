@@ -28,10 +28,9 @@ private slots:
     void on_actionSave_Console_to_file_triggered();
 
     void on_actionAbout_triggered();
-
-//    void parmsChanged(int index);
-
     void on_programButton_clicked();
+
+    void on_verifyButton_clicked();
 
 protected:
 
@@ -44,10 +43,7 @@ private:
     Ui::MainWindow *    ui = nullptr;
 
     prgrmrVec           programmers;
-
     prgrmrPairList      programmerList;
-
     int                 busyPrgmCnt = 0;
-
 };
 #endif // MAINWINDOW_H

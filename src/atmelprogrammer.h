@@ -7,6 +7,7 @@
 #include <QMutex>
 
 class AtmelProgrammer;
+class QComboBox;
 
 using prgrmrPair = QPair<QString, QString>;
 using prgrmrPairList = QList<prgrmrPair>;
@@ -25,6 +26,8 @@ public:
 
     explicit AtmelProgrammer(QObject *parent = nullptr, int index = 0);
     ~AtmelProgrammer();
+
+    void            addSupportedDevices(QComboBox * pComboBox);
 
     void            initialize();
 
@@ -102,6 +105,10 @@ public:
         return deviceId;
     }
 
+    void            setVerbose(bool en) {
+        verbose = en;
+    }
+
 signals:
     void            commandStart(int index, QString command);
     void            commandEnd(int index, QString command);
@@ -110,21 +117,24 @@ signals:
 
 private:
     int             prgrmrIndex = 0;
+    bool            verbose = false;
 
     bool            executeCommand(const QString &command,
                                    QStringList * extraArgs = nullptr);
 
     bool            cmdInProgress = false;
 
+    QString         fwPath;
     QString         progTool;
     QString         deviceId;
     QString         progIF;
     QString         progSN;
 
     QString         atProgramPath;
-    QString         fwPath;
 
-    QString         fuseH, fuseL, fuseE;
+    QString         fuseH,
+                    fuseL,
+                    fuseE;
 
     QProcess *      programmerProc = nullptr;
     QMutex          prgrmrMutex;

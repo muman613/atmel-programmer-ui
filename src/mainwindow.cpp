@@ -7,12 +7,14 @@
 #include "ui_mainwindow.h"
 #include "optiondialog.h"
 
+#if 0
 QStringList supportedDevices = {
     "atmega162",
     "atmega328p",
     "atmega1280",
     "atmega2560"
 };
+#endif
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -20,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    QTimer::singleShot(500, this, [=]() {
+    QTimer::singleShot(100, this, [=]() {
        allocateProgrammers();
     });
 }
@@ -52,12 +54,13 @@ void MainWindow::enableControls(bool en)
 bool MainWindow::getProgrammerList()
 {
     AtmelProgrammer::getProgrammerList(programmerList);
-
     qDebug() << programmerList;
-
     return true;
 }
 
+/**
+ * @brief Get the list of programmers and allocate each one (up to three).
+ */
 void MainWindow::allocateProgrammers()
 {
     qDebug() << Q_FUNC_INFO;
@@ -103,9 +106,7 @@ void MainWindow::allocateProgrammers()
             QComboBox * devWidget = grpBox->findChild<QComboBox*>(devId);
             Q_ASSERT(devWidget != nullptr);
 
-            for (auto devid : supportedDevices) {
-                devWidget->addItem(devid);
-            }
+            newPrgrmr->addSupportedDevices(devWidget);
 
             tmpString = newPrgrmr->getDeviceId();
             if (!tmpString.isEmpty()) {
@@ -127,15 +128,15 @@ void MainWindow::allocateProgrammers()
 
             // Connect the dots...
             connect(idWidget, QOverload<const QString &>::of(&QComboBox::currentTextChanged), [=](const QString & text) {
-               qDebug() << "Programmer " << i << " S/N changed to " << text;
+               qDebug() << "Programmer " << i + 1 << " S/N changed to " << text;
                programmers[i]->setSerialNum(text);
             });
             connect(devWidget, QOverload<const QString &>::of(&QComboBox::currentTextChanged), [=](const QString & text) {
-               qDebug() << "Programmer " << i << " device changed to " << text;
+               qDebug() << "Programmer " << i + 1<< " device changed to " << text;
                programmers[i]->setDeviceId(text);
             });
             connect(fwWidget, QOverload<const QString &>::of(&QLineEdit::textChanged), [=](const QString & text) {
-               qDebug() << "Programmer " << i << " firmware changed to " << text;
+               qDebug() << "Programmer " << i + 1 << " firmware changed to " << text;
                programmers[i]->setFirmware(text);
             });
             connect(browseBut, QOverload<bool>::of(&QPushButton::clicked), [=](bool clicked) {
@@ -155,24 +156,27 @@ void MainWindow::allocateProgrammers()
                }
             });
             connect(optionsBut, QOverload<bool>::of(&QPushButton::clicked), [=](bool clicked) {
-               qDebug() << "Options button for prgrmr " << i << " clicked " << clicked;
+               qDebug() << "Options button for prgrmr " << i + 1 << " clicked " << clicked;
 
                optionDialog     options;
 
                options.setInterface(programmers[i]->getInterface());
+               options.setVerbose(programmers[i]->getVerbose());
 
                if (options.exec()) {
                    programmers[i]->setInterface(options.getInterface());
+                   programmers[i]->setVerbose(options.getVerbose());
                }
-
             });
 
             connect(newPrgrmr, &AtmelProgrammer::statusText, [=](int index, AtmelProgrammer::streamId id,  QByteArray text) {
-                qDebug() << "Status Text :" << index << id << text;
+                QString stream = QString(text).replace("\r", "X");
+
+                qDebug() << "Status Text :" << index << id << stream;
                 if (id == AtmelProgrammer::STREAM_STDERR) {
                     ui->console->setFontWeight(QFont::Bold);
                 }
-                ui->console->append(text);
+                ui->console->append(stream);
                 if (id == AtmelProgrammer::STREAM_STDERR) {
                     ui->console->setFontWeight(QFont::Normal);
                 }
@@ -204,11 +208,15 @@ void MainWindow::allocateProgrammers()
                     ui->verifyButton->setEnabled(true);
                 }
             });
+            grpBox->setDisabled(false);
         } else {
             qDebug() << "Disable programmer " << i + 1;
             grpBox->setDisabled(true);
         }
     }
+
+    QString sMsg = QString("Found %1 AtmelICE programmers.").arg(programmers.size());
+    ui->console->append(sMsg);
 }
 
 void MainWindow::enableProgrammer(int index, bool en)
@@ -255,5 +263,18 @@ void MainWindow::on_programButton_clicked()
         grpBox->setEnabled(false);
 
         prgrmr->program();
+    }
+}
+
+void MainWindow::on_verifyButton_clicked()
+{
+    for (auto prgrmr : programmers) {
+        int index           = prgrmr->index() + 1;
+        QString grpbx       = QString("programmer%1").arg(index);
+        QWidget * grpBox    = ui->centralwidget->findChild<QWidget*>(grpbx);
+
+        grpBox->setEnabled(false);
+
+        prgrmr->verify();
     }
 }

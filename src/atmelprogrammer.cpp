@@ -1,6 +1,16 @@
 #include <QDebug>
 #include <QSettings>
+#include <QComboBox>
+
 #include "atmelprogrammer.h"
+
+
+static QStringList supportedDevices = {
+    "atmega162",
+    "atmega328p",
+    "atmega1280",
+    "atmega2560"
+};
 
 AtmelProgrammer::AtmelProgrammer(QObject *parent, int index)
     : QObject(parent),
@@ -22,8 +32,17 @@ AtmelProgrammer::~AtmelProgrammer()
     iniSettings.setValue("deviceId",    QVariant(deviceId));
     iniSettings.setValue("progIF",      QVariant(progIF));
     iniSettings.setValue("ProgSN",      QVariant(progSN));
+    iniSettings.setValue("bVerbose",    QVariant(verbose));
 
     iniSettings.endGroup();
+}
+
+void AtmelProgrammer::addSupportedDevices(QComboBox *pComboBox)
+{
+    pComboBox->clear();
+    for (auto devid : supportedDevices) {
+        pComboBox->addItem(devid);
+    }
 }
 
 void AtmelProgrammer::initialize()
@@ -40,6 +59,7 @@ void AtmelProgrammer::initialize()
     deviceId        = iniSettings.value("deviceId",     "atmega328p").toString();
     progIF          = iniSettings.value("progIF",       "isp").toString();
     progSN          = iniSettings.value("ProgSN").toString();
+    verbose         = iniSettings.value("bVerbose",     false).toBool();
 
     iniSettings.endGroup();
 
@@ -157,6 +177,13 @@ bool AtmelProgrammer::verify()
     return true;
 }
 
+/**
+ * @brief Run the `atprogram.exe` programmer passing exta arguments.
+ *
+ * @param command - atprogram.exe major command
+ * @param extraArgs - atprogram.exe exta arguments
+ * @return
+ */
 bool AtmelProgrammer::executeCommand(const QString &command, QStringList * extraArgs)
 {
     QMutexLocker        lock(&prgrmrMutex);
@@ -180,10 +207,6 @@ bool AtmelProgrammer::executeCommand(const QString &command, QStringList * extra
                 QString exitMsg = exitCodeToString(exitCode);
                 qDebug() << "Process finished" << exitMsg << exitStatus;
                 if (exitCode != 0) {
-//                    ui->consoleText->append(exitMsg);
-//                    ui->consoleText->setFontWeight(QFont::Bold);
-//                    ui->consoleText->append(programmerProc->readAllStandardError());
-//                    ui->consoleText->setFontWeight(QFont::Normal);
                     QByteArray stdErr = programmerProc->readAllStandardError();
                     emit statusText(prgrmrIndex, AtmelProgrammer::STREAM_STDERR, stdErr);
                 }
@@ -200,7 +223,17 @@ bool AtmelProgrammer::executeCommand(const QString &command, QStringList * extra
         emit statusText(prgrmrIndex, AtmelProgrammer::STREAM_STDOUT, stdOut);
     });
 
+    connect(programmerProc, &QProcess::readyReadStandardOutput, [=]() {
+        QByteArray stdOut = programmerProc->readAllStandardOutput();
+        qDebug() << stdOut;
+        emit statusText(prgrmrIndex, AtmelProgrammer::STREAM_STDOUT, stdOut);
+    });
     QStringList argList;
+
+    // If verbose flag is set, pass -v to atprogram.exe
+    if (verbose) {
+        argList.append("-v");
+    }
 
     argList.append("-t");
     argList.append(progTool);
@@ -226,6 +259,12 @@ bool AtmelProgrammer::executeCommand(const QString &command, QStringList * extra
     return true;
 }
 
+/**
+ * @brief Use `atprogram.exe list` to get list of available programmers.
+ *
+ * @param prgrmrlist
+ * @return
+ */
 bool AtmelProgrammer::getProgrammerList(prgrmrPairList & prgrmrlist)
 {
     QProcess programmer;
@@ -254,5 +293,5 @@ bool AtmelProgrammer::getProgrammerList(prgrmrPairList & prgrmrlist)
         }
     }
 
-    return true;
+    return (bool)(prgrmrlist.size() > 0);
 }
