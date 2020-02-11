@@ -169,7 +169,13 @@ void MainWindow::allocateProgrammers()
 
             connect(newPrgrmr, &AtmelProgrammer::statusText, [=](int index, AtmelProgrammer::streamId id,  QByteArray text) {
                 qDebug() << "Status Text :" << index << id << text;
+                if (id == AtmelProgrammer::STREAM_STDERR) {
+                    ui->console->setFontWeight(QFont::Bold);
+                }
                 ui->console->append(text);
+                if (id == AtmelProgrammer::STREAM_STDERR) {
+                    ui->console->setFontWeight(QFont::Normal);
+                }
             });
 
             connect(newPrgrmr, &AtmelProgrammer::commandStart, [=](int ndx, QString command) {
@@ -193,7 +199,7 @@ void MainWindow::allocateProgrammers()
                 QString sMsg = QString("Ended '%1' of programmer %2").arg(command).arg(ndx);
                 ui->console->append(sMsg);
                 busyPrgmCnt--;
-                if (busyPrgmCnt -= 0) {
+                if (busyPrgmCnt == 0) {
                     ui->programButton->setEnabled(true);
                     ui->verifyButton->setEnabled(true);
                 }

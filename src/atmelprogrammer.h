@@ -92,7 +92,7 @@ public:
 
     void            setDeviceId(const QString & devid) {
         if (devid != deviceId) {
-            qDebug() << Q_FUNC_INFO;
+            qDebug() << "deviceId changed to" << devid;
             deviceId = devid;
             emit parmsChanged(prgrmrIndex);
         }

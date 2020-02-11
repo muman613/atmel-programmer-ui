@@ -16,18 +16,20 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    atmelprogrammer.cpp \
-    main.cpp \
-    mainwindow.cpp \
+    src/atmelprogrammer.cpp \
+    src/main.cpp \
+    src/mainwindow.cpp \
+    src/optiondialog.cpp
 
 
 HEADERS += \
-    atmelprogrammer.h \
-    mainwindow.h \
+    src/atmelprogrammer.h \
+    src/mainwindow.h \
+    src/optiondialog.h
 
 FORMS += \
-    mainwindow.ui \
-    optiondlg.ui
+    src/mainwindow.ui \
+    src/optiondlg.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

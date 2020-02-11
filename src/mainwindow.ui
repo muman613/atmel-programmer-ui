@@ -42,6 +42,9 @@
            <height>0</height>
           </size>
          </property>
+         <property name="toolTip">
+          <string>Device ID for Programmer</string>
+         </property>
         </widget>
        </item>
        <item>
@@ -94,6 +97,9 @@
            <height>0</height>
           </size>
          </property>
+         <property name="toolTip">
+          <string>Device ID for Programmer</string>
+         </property>
         </widget>
        </item>
        <item>
@@ -142,6 +148,9 @@
            <width>90</width>
            <height>0</height>
           </size>
+         </property>
+         <property name="toolTip">
+          <string>Device ID for Programmer</string>
          </property>
         </widget>
        </item>

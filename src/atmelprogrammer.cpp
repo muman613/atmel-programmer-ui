@@ -184,7 +184,8 @@ bool AtmelProgrammer::executeCommand(const QString &command, QStringList * extra
 //                    ui->consoleText->setFontWeight(QFont::Bold);
 //                    ui->consoleText->append(programmerProc->readAllStandardError());
 //                    ui->consoleText->setFontWeight(QFont::Normal);
-                    qDebug() << programmerProc->readAllStandardError();
+                    QByteArray stdErr = programmerProc->readAllStandardError();
+                    emit statusText(prgrmrIndex, AtmelProgrammer::STREAM_STDERR, stdErr);
                 }
                 delete programmerProc;
                 programmerProc = nullptr;
@@ -196,7 +197,7 @@ bool AtmelProgrammer::executeCommand(const QString &command, QStringList * extra
     connect(programmerProc, &QProcess::readyReadStandardOutput, [=]() {
         QByteArray stdOut = programmerProc->readAllStandardOutput();
         qDebug() << stdOut;
-        emit statusText(prgrmrIndex, stdOut);
+        emit statusText(prgrmrIndex, AtmelProgrammer::STREAM_STDOUT, stdOut);
     });
 
     QStringList argList;
