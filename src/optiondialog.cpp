@@ -60,7 +60,7 @@ void optionDialog::setVerbose(bool bVerbose)
  * @brief Return the current verbose setting for programmer.
  * @return true if verbose is set.
  */
-bool optionDialog::getVerbose()
+bool optionDialog::getVerbose() const
 {
     return ui->verboseCheck->isChecked();
 }

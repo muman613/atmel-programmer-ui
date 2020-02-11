@@ -27,6 +27,8 @@ public:
     explicit AtmelProgrammer(QObject *parent = nullptr, int index = 0);
     ~AtmelProgrammer();
 
+    friend QDebug operator<<(QDebug debug, const AtmelProgrammer &p);
+
     void            addSupportedDevices(QComboBox * pComboBox);
 
     void            initialize();
@@ -107,6 +109,9 @@ public:
 
     void            setVerbose(bool en) {
         verbose = en;
+    }
+    bool            getVerbose() const {
+        return verbose;
     }
 
 signals:
