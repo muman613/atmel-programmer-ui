@@ -170,7 +170,7 @@ void MainWindow::allocateProgrammers()
             });
 
             connect(newPrgrmr, &AtmelProgrammer::statusText, [=](int index, AtmelProgrammer::streamId id,  QByteArray text) {
-                QString stream = QString(text).replace("\r", "X");
+                QString stream = QString(text).replace("\r", "").trimmed();
 
                 qDebug() << "Status Text :" << index << id << stream;
                 if (id == AtmelProgrammer::STREAM_STDERR) {
