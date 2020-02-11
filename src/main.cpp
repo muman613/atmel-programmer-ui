@@ -16,8 +16,8 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
     fp = fopen(LOGFILE_NAME, "a");
 
     QByteArray localMsg = msg.toLocal8Bit();
-    const char *file = context.file ? context.file : "";
-    const char *function = context.function ? context.function : "";
+//    const char *file = context.file ? context.file : "";
+//    const char *function = context.function ? context.function : "";
 
     QString     funcLine = QString("(%1:%2)").arg(context.function).arg(context.line);
 
