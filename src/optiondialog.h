@@ -11,8 +11,6 @@ public:
 
     void setInterface(const QString & tool);
     QString getInterface() const;
-    void setVerbose(bool bVerbose);
-    bool getVerbose() const;
 
 private:
     Ui_optionDialog * ui = nullptr;
