@@ -4,6 +4,8 @@
 #include <QDialog>
 #include "ui_optiondlg.h"
 
+
+
 class optionDialog : public QDialog, public Ui::optionDialog
 {
 public:
@@ -11,6 +13,13 @@ public:
 
     void setInterface(const QString & tool);
     QString getInterface() const;
+
+
+    void setFriendlyName(const QString & name);
+    QString getFriendlyName() const;
+
+    void setVerbose(bool bVerbose);
+    bool getVerbose() const;
 
 private:
     Ui_optionDialog * ui = nullptr;

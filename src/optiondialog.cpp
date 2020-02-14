@@ -46,6 +46,16 @@ QString optionDialog::getInterface() const
     return ui->ifCombo->currentText();
 }
 
+void optionDialog::setFriendlyName(const QString &name)
+{
+    ui->friendlyName->setText(name);
+}
+
+QString optionDialog::getFriendlyName() const
+{
+    return ui->friendlyName->text();
+}
+
 /**
  * @brief Set the verbose flag to be used by the programmer.
  * @param bVerbose true to enable verbose output.
@@ -60,7 +70,7 @@ void optionDialog::setVerbose(bool bVerbose)
  * @brief Return the current verbose setting for programmer.
  * @return true if verbose is set.
  */
-bool optionDialog::getVerbose()
+bool optionDialog::getVerbose() const
 {
     return ui->verboseCheck->isChecked();
 }

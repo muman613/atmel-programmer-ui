@@ -34,4 +34,5 @@ FORMS += \
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
+else: target.path = $${PWD}/installer
 !isEmpty(target.path): INSTALLS += target

@@ -7,15 +7,10 @@
 #include "ui_mainwindow.h"
 #include "optiondialog.h"
 
-#if 0
-QStringList supportedDevices = {
-    "atmega162",
-    "atmega328p",
-    "atmega1280",
-    "atmega2560"
-};
-#endif
-
+/**
+ * @brief MainWindow Constructor
+ * @param parent
+ */
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -23,28 +18,24 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     QTimer::singleShot(100, this, [=]() {
-       allocateProgrammers();
+        allocateProgrammers();
+
+        // If there are no AtmelICE programmers found, display message and quit...
+        if (programmers.size() == 0) {
+            QMessageBox::critical(this, "Critical Error",
+                                  "No Programmers Found");
+            close();
+        }
     });
 }
 
+/**
+ * @brief Main Window Destructor
+ */
 MainWindow::~MainWindow()
 {
     delete ui;
 }
-
-
-
-void MainWindow::enableControls(bool en)
-{
-    Q_UNUSED(en)
-//    ui->infoButton->setEnabled(en);
-//    ui->programButton->setEnabled(en);
-//    ui->verifyButton->setEnabled(en);
-//    ui->eraseButton->setEnabled(en);
-//    ui->browseButton->setEnabled(en);
-//    ui->firmwareName->setEnabled(en);
-}
-
 
 /**
  * @brief MainWindow::getProgrammerList gets the list of programmers connected.
@@ -54,8 +45,12 @@ void MainWindow::enableControls(bool en)
 bool MainWindow::getProgrammerList()
 {
     AtmelProgrammer::getProgrammerList(programmerList);
-    qDebug() << programmerList;
-    return true;
+    if (!programmerList.isEmpty())
+        qDebug() << programmerList;
+    else
+        qDebug() << "NO PROGRAMMERS FOUND!";
+
+    return !programmerList.isEmpty();
 }
 
 /**
@@ -78,7 +73,7 @@ void MainWindow::allocateProgrammers()
 
     for (int i = 0 ; i < 3 ; i++) {
         QString grpbx       = QString("programmer%1").arg(i + 1);
-        QWidget * grpBox    = ui->centralwidget->findChild<QWidget*>(grpbx);
+        QGroupBox * grpBox  = ui->centralwidget->findChild<QGroupBox*>(grpbx);
 
         if (i < programmerList.size()) {
             QString prgrmrId    = QString("id_%1").arg(i + 1);
@@ -96,6 +91,9 @@ void MainWindow::allocateProgrammers()
             for (auto prgrmr : programmerList) {
                 idWidget->addItem(prgrmr.second);
             }
+
+            QString prgName = newPrgrmr->getFriendlyName();
+            grpBox->setTitle(prgName);
 
             QString tmpString = newPrgrmr->getSerialNum();
 
@@ -162,15 +160,19 @@ void MainWindow::allocateProgrammers()
 
                options.setInterface(programmers[i]->getInterface());
                options.setVerbose(programmers[i]->getVerbose());
+               options.setFriendlyName(programmers[i]->getFriendlyName());
 
                if (options.exec()) {
                    programmers[i]->setInterface(options.getInterface());
                    programmers[i]->setVerbose(options.getVerbose());
+                   programmers[i]->setFriendlyname(options.getFriendlyName());
+
+                   grpBox->setTitle(options.getFriendlyName());
                }
             });
 
             connect(newPrgrmr, &AtmelProgrammer::statusText, [=](int index, AtmelProgrammer::streamId id,  QByteArray text) {
-                QString stream = QString(text).replace("\r", "X");
+                QString stream = QString(text).replace("\r", "").trimmed();
 
                 qDebug() << "Status Text :" << index << id << stream;
                 if (id == AtmelProgrammer::STREAM_STDERR) {
@@ -186,7 +188,7 @@ void MainWindow::allocateProgrammers()
                 qDebug() << "Command Started :" << ndx << command;
                 enableProgrammer(ndx, false);
 
-                QString sMsg = QString("Started '%1' of programmer %2").arg(command).arg(ndx);
+                QString sMsg = QString("Started '%1' of programmer %2").arg(command).arg(ndx + 1);
                 ui->console->append(sMsg);
 
                 busyPrgmCnt++;
@@ -200,7 +202,7 @@ void MainWindow::allocateProgrammers()
                 qDebug() << "Command Ended :" << ndx << command;
                 enableProgrammer(ndx, true);
 
-                QString sMsg = QString("Ended '%1' of programmer %2").arg(command).arg(ndx);
+                QString sMsg = QString("Ended '%1' of programmer %2").arg(command).arg(ndx + 1);
                 ui->console->append(sMsg);
                 busyPrgmCnt--;
                 if (busyPrgmCnt == 0) {
@@ -219,6 +221,12 @@ void MainWindow::allocateProgrammers()
     ui->console->append(sMsg);
 }
 
+/**
+ * @brief Enable/Disable programmer by index #
+ *
+ * @param index - Index of Programmer to enable/disable
+ * @param en - true to enable, false to disable.
+ */
 void MainWindow::enableProgrammer(int index, bool en)
 {
     QString grpbx       = QString("programmer%1").arg(index + 1);
@@ -247,10 +255,10 @@ void MainWindow::on_actionSave_Console_to_file_triggered()
     }
 }
 
-
 void MainWindow::on_actionAbout_triggered()
 {
-    QMessageBox::about(this, "Atmel Programmer", "(C) 2020 Wunder-Bar\nProgrammer : Michael Uman");
+    QMessageBox::about(this, "Atmel Programmer",
+                       "(C) 2020 Wunder-Bar\nProgrammer : Michael Uman");
 }
 
 void MainWindow::on_programButton_clicked()
@@ -277,4 +285,14 @@ void MainWindow::on_verifyButton_clicked()
 
         prgrmr->verify();
     }
+}
+
+void MainWindow::on_actionLoad_Configuration_triggered()
+{
+
+}
+
+void MainWindow::on_actionSave_Configuration_triggered()
+{
+
 }

@@ -14,6 +14,23 @@ using prgrmrPairList = QList<prgrmrPair>;
 
 using prgrmrVec = QVector<AtmelProgrammer *>;
 
+class programmerOptions {
+public:
+    programmerOptions();
+    virtual ~programmerOptions();
+
+    QString         friendlyName;
+    QString         atProgramPath;
+    QString         fwPath;
+    QString         progTool;
+    QString         progIF;
+    QString         progSN;
+    QString         fuseH;
+    QString         fuseL;
+    QString         fuseE;
+    QString         lockBits;
+};
+
 class AtmelProgrammer : public QObject
 {
     Q_OBJECT
@@ -26,6 +43,8 @@ public:
 
     explicit AtmelProgrammer(QObject *parent = nullptr, int index = 0);
     ~AtmelProgrammer();
+
+    friend QDebug operator<<(QDebug debug, const AtmelProgrammer &p);
 
     void            addSupportedDevices(QComboBox * pComboBox);
 
@@ -108,6 +127,22 @@ public:
     void            setVerbose(bool en) {
         verbose = en;
     }
+    bool            getVerbose() const {
+        return verbose;
+    }
+
+    void            setFriendlyname(const QString & name)
+    {
+        if (name != friendlyName) {
+            qDebug() << "Friendly name changed to" << name;
+            friendlyName = name;
+            emit parmsChanged(prgrmrIndex);
+        }
+    }
+
+    QString         getFriendlyName() const {
+        return friendlyName;
+    }
 
 signals:
     void            commandStart(int index, QString command);
@@ -123,6 +158,8 @@ private:
                                    QStringList * extraArgs = nullptr);
 
     bool            cmdInProgress = false;
+
+    QString         friendlyName;
 
     QString         fwPath;
     QString         progTool;

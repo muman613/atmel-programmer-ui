@@ -12,26 +12,8 @@ QDebug operator<<(QDebug debug, const AtmelProgrammer &p)
     debug.nospace();
     debug.noquote();
 
-#if 1
     debug << "( Programmer ";
     debug << p.prgrmrIndex << " TOOL : " << p.progTool << " | IF : " << p.progIF << " | SN : " << p.progSN << " )";
-#else
-    debug.noquote();
-    debug.nospace();
-
-    debug << "Programmer " << p.prgrmrIndex << ":" << "\n";
-    debug << QString("-").repeated(20) << "\n";
-
-    debug << "programmerPath : " << p.atProgramPath << "\n";
-    debug << "fwPath         : " << p.fwPath << "\n";
-    debug << "progTool       : " << p.progTool << "\n";
-    debug << "deviceId       : " << p.deviceId << "\n";
-    debug << "Interface      : " << p.progIF << "\n";
-    debug << "serialNum      : " << p.progSN << "\n";
-    debug << "verbose        : " << p.verbose << "\n";
-
-    debug << QString("-").repeated(20) << "\n";
-#endif
 
     return debug;
 }
@@ -57,7 +39,7 @@ AtmelProgrammer::AtmelProgrammer(QObject *parent, int index)
       prgrmrIndex(index),
       atProgramPath("atprogram.exe")
 {
-
+    friendlyName = QString("Programmer #%1").arg(index + 1);
 }
 
 AtmelProgrammer::~AtmelProgrammer()
@@ -73,6 +55,7 @@ AtmelProgrammer::~AtmelProgrammer()
     iniSettings.setValue("progIF",      QVariant(progIF));
     iniSettings.setValue("ProgSN",      QVariant(progSN));
     iniSettings.setValue("bVerbose",    QVariant(verbose));
+    iniSettings.setValue("friendlyName",QVariant(friendlyName));
 
     iniSettings.endGroup();
 }
@@ -111,19 +94,9 @@ void AtmelProgrammer::initialize()
     progIF          = iniSettings.value("progIF",       "isp").toString();
     progSN          = iniSettings.value("ProgSN").toString();
     verbose         = iniSettings.value("bVerbose",     false).toBool();
+    friendlyName    = iniSettings.value("friendlyName", friendlyName).toString();
 
     iniSettings.endGroup();
-
-#if 0
-    qDebug() << "------------------------------";
-    qDebug() << "Index" << prgrmrIndex;
-    qDebug() << "fwPath " << fwPath;
-    qDebug() << "progTool" << progTool;
-    qDebug() << "deviceId" << deviceId;
-    qDebug() << "progIF" << progIF;
-    qDebug() << "progSN" << progSN;
-    qDebug() << "------------------------------";
-#endif
 
     emit parmsChanged(prgrmrIndex);
 }

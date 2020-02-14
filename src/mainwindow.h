@@ -26,15 +26,16 @@ public:
 private slots:
     void on_actionClear_Console_triggered();
     void on_actionSave_Console_to_file_triggered();
-
     void on_actionAbout_triggered();
     void on_programButton_clicked();
-
     void on_verifyButton_clicked();
+
+    void on_actionLoad_Configuration_triggered();
+
+    void on_actionSave_Configuration_triggered();
 
 protected:
 
-    void                enableControls(bool en);
     bool                getProgrammerList();
     void                allocateProgrammers();
     void                enableProgrammer(int index, bool en);
