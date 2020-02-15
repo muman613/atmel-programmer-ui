@@ -6,6 +6,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "optiondialog.h"
+#include "programmeroptions.h"
 
 /**
  * @brief MainWindow Constructor
@@ -130,7 +131,7 @@ void MainWindow::allocateProgrammers()
                programmers[i]->setSerialNum(text);
             });
             connect(devWidget, QOverload<const QString &>::of(&QComboBox::currentTextChanged), [=](const QString & text) {
-               qDebug() << "Programmer " << i + 1<< " device changed to " << text;
+               qDebug() << "Programmer " << i + 1 << " device changed to " << text;
                programmers[i]->setDeviceId(text);
             });
             connect(fwWidget, QOverload<const QString &>::of(&QLineEdit::textChanged), [=](const QString & text) {
@@ -185,7 +186,7 @@ void MainWindow::allocateProgrammers()
             });
 
             connect(newPrgrmr, &AtmelProgrammer::commandStart, [=](int ndx, QString command) {
-                qDebug() << "Command Started :" << ndx << command;
+                qDebug() << "Command Started :" << ndx + 1 << command;
                 enableProgrammer(ndx, false);
 
                 QString sMsg = QString("Started '%1' of programmer %2").arg(command).arg(ndx + 1);
@@ -199,7 +200,7 @@ void MainWindow::allocateProgrammers()
             });
 
             connect(newPrgrmr, &AtmelProgrammer::commandEnd, [=](int ndx, QString command) {
-                qDebug() << "Command Ended :" << ndx << command;
+                qDebug() << "Command Ended :" << ndx + 1 << command;
                 enableProgrammer(ndx, true);
 
                 QString sMsg = QString("Ended '%1' of programmer %2").arg(command).arg(ndx + 1);
@@ -289,7 +290,57 @@ void MainWindow::on_verifyButton_clicked()
 
 void MainWindow::on_actionLoad_Configuration_triggered()
 {
+    QFileDialog     chooseFile(this, "Select Firmware File");
 
+    chooseFile.setNameFilter(tr("JSON (*.json)"));
+    chooseFile.setViewMode(QFileDialog::Detail);
+    chooseFile.setFileMode(QFileDialog::ExistingFile);
+
+    if (chooseFile.exec()) {
+        optionVec       opts;
+
+        QStringList FileNames = chooseFile.selectedFiles();
+        QString configPath = FileNames[0];
+
+        if (loadOptionsFromJSON(configPath, opts)) {
+            auto optIter = opts.begin();
+            auto prgrmrIter = programmers.begin();
+
+            qDebug() << opts;
+
+            for ( ; (optIter != opts.end()) && (prgrmrIter != programmers.end()) ; optIter++, prgrmrIter++) {
+
+                // Set the options on the programmer object...
+                (*prgrmrIter)->setProgrammerOptions(*optIter);
+
+                int id = (*prgrmrIter)->index() + 1;
+
+                QString     grpbx   = QString("programmer%1").arg(id);
+                QGroupBox * grpBox  = ui->centralwidget->findChild<QGroupBox*>(grpbx);
+
+                QString prgrmrId    = QString("id_%1").arg(id);
+                QString devId       = QString("device_%1").arg(id);
+                QString fwPath      = QString("fw_%1").arg(id);
+                QString browser     = QString("browse_%1").arg(id);
+                QString options     = QString("options_%1").arg(id);
+
+                QWidget * pWidget;
+
+                pWidget = grpBox->findChild<QWidget*>(prgrmrId);
+                static_cast<QComboBox*>(pWidget)->setCurrentText((*optIter).progSN);
+
+                pWidget = grpBox->findChild<QWidget*>(devId);
+                static_cast<QComboBox*>(pWidget)->setCurrentText((*optIter).deviceId);
+
+                pWidget = grpBox->findChild<QWidget*>(fwPath);
+                static_cast<QLineEdit*>(pWidget)->setText((*optIter).fwPath);
+
+
+                qDebug() << grpBox;
+            }
+//            qDebug() << opts;
+        }
+    }
 }
 
 void MainWindow::on_actionSave_Configuration_triggered()

@@ -5,32 +5,19 @@
 #include <QObject>
 #include <QProcess>
 #include <QMutex>
+#include "programmeroptions.h"
 
 class AtmelProgrammer;
 class QComboBox;
 
-using prgrmrPair = QPair<QString, QString>;
-using prgrmrPairList = QList<prgrmrPair>;
+// Useful types...
+using prgrmrPair        = QPair<QString, QString>;
+using prgrmrPairList    = QList<prgrmrPair>;
+using prgrmrVec         = QVector<AtmelProgrammer *>;
 
-using prgrmrVec = QVector<AtmelProgrammer *>;
-
-class programmerOptions {
-public:
-    programmerOptions();
-    virtual ~programmerOptions();
-
-    QString         friendlyName;
-    QString         atProgramPath;
-    QString         fwPath;
-    QString         progTool;
-    QString         progIF;
-    QString         progSN;
-    QString         fuseH;
-    QString         fuseL;
-    QString         fuseE;
-    QString         lockBits;
-};
-
+/**
+ * @brief The AtmelProgrammer class
+ */
 class AtmelProgrammer : public QObject
 {
     Q_OBJECT
@@ -49,6 +36,8 @@ public:
     void            addSupportedDevices(QComboBox * pComboBox);
 
     void            initialize();
+
+    void            setProgrammerOptions(programmerOptions & opts);
 
     int             index() const {
         return prgrmrIndex;

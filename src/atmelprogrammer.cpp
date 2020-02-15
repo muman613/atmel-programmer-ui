@@ -101,6 +101,23 @@ void AtmelProgrammer::initialize()
     emit parmsChanged(prgrmrIndex);
 }
 
+/**
+ * @brief AtmelProgrammer::setProgrammerOptions
+ * @param opts
+ */
+void AtmelProgrammer::setProgrammerOptions(programmerOptions &opts)
+{
+    qDebug() << "setProgrammerOptions :" << opts;
+
+    progTool        = opts.progTool;
+    deviceId        = opts.deviceId;
+    progIF          = opts.progIF;
+    progSN          = opts.progSN;
+    friendlyName    = opts.friendlyName;
+    fwPath          = opts.fwPath;
+    verbose         = opts.verbose;
+}
+
 typedef struct _codeEntry {
     int         code;
     QString     msg;
