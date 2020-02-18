@@ -7,18 +7,31 @@ class flashEnv : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QString tool READ tool WRITE setTool NOTIFY envChanged)
-    Q_PROPERTY(QString interface READ interface WRITE setInterface NOTIFY envChanged)
-    Q_PROPERTY(QString serial READ serial WRITE setSerial NOTIFY envChanged)
-    Q_PROPERTY(QString device READ device WRITE setDevice NOTIFY envChanged)
-    Q_PROPERTY(QString fwPath READ fwPath WRITE setFwpath NOTIFY envChanged)
+    Q_PROPERTY(QString CMD READ cmd WRITE setCmd NOTIFY envChanged)
+    Q_PROPERTY(QString TOOL READ tool WRITE setTool NOTIFY envChanged)
+    Q_PROPERTY(QString IF READ interface WRITE setInterface NOTIFY envChanged)
+    Q_PROPERTY(QString SN READ serial WRITE setSerial NOTIFY envChanged)
+    Q_PROPERTY(QString DEVID READ device WRITE setDevice NOTIFY envChanged)
+    Q_PROPERTY(QString IMAGE READ image WRITE setImage NOTIFY envChanged)
+    Q_PROPERTY(QString VERBOSE MEMBER m_verbose NOTIFY envChanged)
 
 public:
     explicit flashEnv(QObject *parent = nullptr);
 
-    void setTool(QString tool) {
-        if (tool != m_tool) {
-            m_tool = tool;
+    void setCmd(const QString & command) {
+        if (command != m_cmd) {
+            m_cmd = command;
+            emit envChanged();
+        }
+    }
+
+    QString cmd() const {
+        return m_cmd;
+    }
+
+    void setTool(QString prgrmr) {
+        if (prgrmr != m_tool) {
+            m_tool = prgrmr;
             emit envChanged();
         }
     }
@@ -60,23 +73,37 @@ public:
         return m_device;
     }
 
-    void setFwpath(const QString & fwPath) {
+    void setImage(const QString & fwPath) {
         if (fwPath != m_fwPath) {
             m_fwPath = fwPath;
             emit envChanged();
         }
     }
-    QString fwPath() const {
+    QString image() const {
         return m_fwPath;
     }
 
+    void setVerbose(const bool flag) {
+        m_verbose = (flag)?"-v":"";
+        if (flag != bVerbose) {
+            bVerbose = flag;
+            emit envChanged();
+        }
+    }
+
+    bool verbose() const {
+        return bVerbose;
+    }
+
 private:
-    QString m_tool;           // atmelice/etc
+    QString m_cmd;                  // 'atprogram.exe'
+    QString m_tool;                 // atmelice/etc
     QString m_interface;            // jtag/isp/etc
     QString m_serial;               // SN of Atmelice device
     QString m_device;               // device (atmega328p)
     QString m_fwPath;               // path to fw hex image
-
+    QString m_verbose;              // Enable/Disable verbose output
+    bool    bVerbose = false;
 signals:
     void envChanged();
 

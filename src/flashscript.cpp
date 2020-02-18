@@ -4,10 +4,14 @@
 #include <QString>
 #include <QStringList>
 #include <QObject>
+#include <QRegularExpression>
+#include <QMetaProperty>
+
+#include "flashscript.h"
+#include "flashenv.h"
 
 flashScript::flashScript()
 {
-
 }
 
 flashScript::flashScript(QString flashFilePath)
@@ -15,6 +19,13 @@ flashScript::flashScript(QString flashFilePath)
     loadScriptFromFile(flashFilePath);
 }
 
+/**
+ * @brief Load script from file.
+ *
+ * @param flashFilePath - String containing path and filename.
+ * @param env - flashEnv object containing current settings.
+ * @return true on success, false on failure.
+ */
 bool flashScript::loadScriptFromFile(const QString & flashFilePath)
 {
     qDebug() << Q_FUNC_INFO;
@@ -28,6 +39,8 @@ bool flashScript::loadScriptFromFile(const QString & flashFilePath)
         auto scriptData = scriptFile.readAll();
 
         script = QString(scriptData).trimmed().split("\n");
+        qDebug() << script;
+
         scriptFile.close();
         loadedPath = flashFilePath;
         result = true;
@@ -36,21 +49,97 @@ bool flashScript::loadScriptFromFile(const QString & flashFilePath)
     return result;
 }
 
+/**
+ * @brief Load script from passed string.
+ *
+ * @param script_string - String containing flash script
+ * @param env - flashEnv object containing current settings.
+ * @return true on success, false on failure.
+ */
 bool flashScript::loadScriptFromString(const QString &script_string)
 {
     qDebug() << Q_FUNC_INFO;
 
     clear();
-    loadedPath.clear();
-
     script = script_string.split("\n");
-
     return (script.size() > 0);
 }
 
+/**
+ * @brief Get original script into QByteArray
+ * @return
+ */
 QByteArray  flashScript::getScript() const {
     QByteArray scr = script.join("\n").toLocal8Bit();
 
     return scr;
+}
+
+bool flashScript::parse(flashEnv *env)
+{
+    qDebug() << Q_FUNC_INFO;
+
+    if (env != nullptr) {
+        qDebug() << "Performing variable replacement...";
+        parsedScript.clear();
+
+        QString newLine;
+
+        for (const auto & scriptLine : script) {
+            newLine = parseScriptLine(scriptLine, env);
+            parsedScript.push_back(newLine);
+        }
+    }
+
+    return (parsedScript.size() > 0);
+}
+
+/**
+ * @brief Replace all "${}" strings with values from environment.
+ *
+ * @param line
+ * @param env
+ * @return
+ */
+QString flashScript::parseScriptLine(const QString &line, flashEnv * env)
+{
+    Q_ASSERT(env != nullptr);
+
+    bool                bDone = false;
+    QString             newLine = line.trimmed();
+    QRegularExpression  re("\\$\\{(\\w+)\\}");
+
+    while (!bDone) {
+        QRegularExpressionMatch match = re.match(newLine);
+
+        if (match.hasMatch()) {
+            QString varName = match.captured(1);
+//          qDebug() << "matched" << varName;
+            QString replaceStr = env->property(varName.toLocal8Bit().data()).toString();
+            if (environContains(env, varName)) {
+                newLine.replace(match.capturedStart(0), match.capturedLength(0), replaceStr);
+            } else {
+                qDebug() << "Unable to replace" << varName << "!";
+                newLine.replace(match.capturedStart(0), match.capturedLength(0), "_NA_");
+            }
+        } else {
+            bDone = true;
+        }
+    }
+
+    return newLine;
+}
+
+/**
+ * @brief Determine if the property exists in the QObject...
+ *
+ * @param obj - QObject to inspect.
+ * @param propName - Property name to search for.
+ * @return
+ */
+bool flashScript::environContains(QObject *obj, QString propName)
+{
+    const QMetaObject * meta = obj->metaObject();
+    return (meta->indexOfProperty(propName.toLocal8Bit().data()) != -1)?true:false;
 }
 

@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QString>
 #include <QStringList>
+#include "flashenv.h"
 
 class flashScript {
 public:
@@ -18,22 +19,31 @@ public:
     }
 
     QStringList::iterator  begin() {
-        return script.begin();
+        return parsedScript.begin();
     }
 
     QStringList::iterator end() {
-        return script.end();
+        return parsedScript.end();
     }
 
     void clear() {
+        qDebug() << Q_FUNC_INFO;
         script.clear();
+        parsedScript.clear();
+        loadedPath.clear();
     }
 
-    QByteArray getScript() const;
+    QByteArray      getScript() const;
+    bool            parse(flashEnv *env);
 
 private:
+    QString         parseScriptLine(const QString & line, flashEnv * env);
+
+    bool            environContains(QObject * obj, QString propName);
+
     QString         loadedPath;
     QStringList     script;
+    QStringList     parsedScript;
 };
 
 #endif // FLASHSCRIPT_H
