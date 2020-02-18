@@ -29,6 +29,8 @@ public:
     QString         fuseL;
     QString         fuseE;
     QString         lockBits;
+    QByteArray      flashscript;
+
     bool            verbose;
 };
 

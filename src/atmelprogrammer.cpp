@@ -57,6 +57,9 @@ AtmelProgrammer::~AtmelProgrammer()
     iniSettings.setValue("bVerbose",    QVariant(verbose));
     iniSettings.setValue("friendlyName",QVariant(friendlyName));
 
+    QByteArray flScr = flash_script.getScript();
+    iniSettings.setValue("flashScript", QVariant(flScr));
+
     iniSettings.endGroup();
 }
 
@@ -96,9 +99,14 @@ void AtmelProgrammer::initialize()
     verbose         = iniSettings.value("bVerbose",     false).toBool();
     friendlyName    = iniSettings.value("friendlyName", friendlyName).toString();
 
+    QByteArray flScr;
+
+    flScr = iniSettings.value("flashScript").toByteArray();
+    flash_script.loadScriptFromString(flScr);
+
     iniSettings.endGroup();
 
-    emit parmsChanged(prgrmrIndex);
+//    emit parmsChanged(prgrmrIndex);
 }
 
 /**
@@ -116,6 +124,8 @@ void AtmelProgrammer::setProgrammerOptions(programmerOptions &opts)
     friendlyName    = opts.friendlyName;
     fwPath          = opts.fwPath;
     verbose         = opts.verbose;
+
+    flash_script.loadScriptFromString(opts.flashscript);
 }
 
 typedef struct _codeEntry {
@@ -173,6 +183,28 @@ bool AtmelProgrammer::isConfigured() const
     }
 }
 
+/**
+ * @brief Set the flash script for this programmer
+ * @param script
+ */
+void AtmelProgrammer::setFlashScript(const QByteArray &script)
+{
+    flash_script.loadScriptFromString(script);
+}
+
+/**
+ * @brief Get the flash script from the programmer.
+ * @return
+ */
+QByteArray AtmelProgrammer::getFlashScript() const
+{
+    return flash_script.getScript();
+}
+
+/**
+ * @brief Start the programming here...
+ * @return
+ */
 bool AtmelProgrammer::program()
 {
     QStringList extraArgs;

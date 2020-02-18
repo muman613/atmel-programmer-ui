@@ -162,11 +162,13 @@ void MainWindow::allocateProgrammers()
                options.setInterface(programmers[i]->getInterface());
                options.setVerbose(programmers[i]->getVerbose());
                options.setFriendlyName(programmers[i]->getFriendlyName());
+               options.setFlashScript(programmers[i]->getFlashScript());
 
                if (options.exec()) {
                    programmers[i]->setInterface(options.getInterface());
                    programmers[i]->setVerbose(options.getVerbose());
                    programmers[i]->setFriendlyname(options.getFriendlyName());
+                   programmers[i]->setFlashScript(options.getFlashScript());
 
                    grpBox->setTitle(options.getFriendlyName());
                }

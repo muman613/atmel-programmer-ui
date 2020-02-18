@@ -74,3 +74,13 @@ bool optionDialog::getVerbose() const
 {
     return ui->verboseCheck->isChecked();
 }
+
+void optionDialog::setFlashScript(const QByteArray &script)
+{
+    ui->flashScript->setText(script);
+}
+
+QByteArray optionDialog::getFlashScript() const
+{
+    return ui->flashScript->toPlainText().toLocal8Bit();
+}

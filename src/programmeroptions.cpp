@@ -98,6 +98,10 @@ bool programmerOptions::loadOptionsFromObject(QJsonObject &obj)
         verbose = obj["verbose"].toBool();
     }
 
+    if (obj.contains("script")) {
+        flashscript = obj["script"].toString().toLocal8Bit();
+    }
+
     return true;
 }
 

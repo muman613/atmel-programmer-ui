@@ -16,6 +16,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    src/flashenv.cpp \
+    src/flashscript.cpp \
     src/programmeroptions.cpp \
     src/atmelprogrammer.cpp \
     src/main.cpp \
@@ -24,6 +26,8 @@ SOURCES += \
 
 
 HEADERS += \
+    src/flashenv.h \
+    src/flashscript.h \
     src/programmeroptions.h \
     src/atmelprogrammer.h \
     src/mainwindow.h \

@@ -6,6 +6,7 @@
 #include <QProcess>
 #include <QMutex>
 #include "programmeroptions.h"
+#include "flashscript.h"
 
 class AtmelProgrammer;
 class QComboBox;
@@ -133,6 +134,10 @@ public:
         return friendlyName;
     }
 
+    void            setFlashScript(const QByteArray & script);
+    QByteArray      getFlashScript() const;
+
+
 signals:
     void            commandStart(int index, QString command);
     void            commandEnd(int index, QString command);
@@ -161,6 +166,8 @@ private:
     QString         fuseH,
                     fuseL,
                     fuseE;
+
+    flashScript     flash_script;
 
     QProcess *      programmerProc = nullptr;
     QMutex          prgrmrMutex;
