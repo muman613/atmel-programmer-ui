@@ -6,7 +6,11 @@
         "sn" : "J41800081492",
         "if" : "JTAG",
         "device": "atmega162",
-        "verbose" : false
+        "verbose" : false,
+        "script" : [
+            "${CMD} ${VERBOSE} -t ${TOOL} -i ${IF} -s ${SN} -d ${DEVID} program -fl -f ${IMAGE} --verify",
+            "${CMD} ${VERBOSE} -t ${TOOL} -i ${IF} -s ${SN} -d ${DEVID} write -fu --values ${FUSES} --verify"
+        ]
     },
     "programmer2": {
         "name" : "Table Programmer",
@@ -15,7 +19,11 @@
         "sn" : "J42700010870",
         "if" : "JTAG",
         "device": "atmega162",
-        "verbose" : false
+        "verbose" : false,
+        "script" : [
+            "${CMD} ${VERBOSE} -t ${TOOL} -i ${IF} -s ${SN} -d ${DEVID} program -fl -f ${IMAGE} --verify",
+            "${CMD} ${VERBOSE} -t ${TOOL} -i ${IF} -s ${SN} -d ${DEVID} write -fu --values ${FUSES} --verify"
+        ]
     },
     "programmer3": {
         "name" : "Pump Programmer",
@@ -24,6 +32,10 @@
         "sn" : "J42700010751",
         "if" : "JTAG",
         "device": "atmega1280",
-        "verbose" : false
+        "verbose" : false,
+        "script" : [
+            "${CMD} ${VERBOSE} -t ${TOOL} -i ${IF} -s ${SN} -d ${DEVID} program -fl -f ${IMAGE} --verify",
+            "${CMD} ${VERBOSE} -t ${TOOL} -i ${IF} -s ${SN} -d ${DEVID} write -fu --values ${FUSES} --verify"
+        ]
     }
 }
