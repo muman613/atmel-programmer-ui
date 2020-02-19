@@ -1,7 +1,7 @@
 {
     "programmer1" : {
         "name" : "Main Control Programmer",
-        "tool" : "atemelice",
+        "tool" : "atmelice",
         "fw" : "C:\\Users\\muman\\Project\\ATMEL\\ATMEL\\Atmel_Single Board\\Main RsdMc_E14A\\RSDMC_E14A.hex",
         "sn" : "J41800081492",
         "if" : "JTAG",
@@ -10,7 +10,7 @@
     },
     "programmer2": {
         "name" : "Table Programmer",
-        "tool" : "atemelice",
+        "tool" : "atmelice",
         "fw" : "C:\\Users\\muman\\Project\\ATMEL\\ATMEL\\Atmel_Single Board\\Table Rev_B00_D\\RSDTB_PgmB00_D.hex",
         "sn" : "J42700010870",
         "if" : "JTAG",
@@ -19,7 +19,7 @@
     },
     "programmer3": {
         "name" : "Pump Programmer",
-        "tool" : "atemelice",
+        "tool" : "atmelice",
         "fw" : "C:\\Users\\muman\\Project\\ATMEL\\ATMEL\\Atmel_Single Board\\Pump Rev_B03_D\\RSDPM_PgmB03_D.hex",
         "sn" : "J42700010751",
         "if" : "JTAG",
