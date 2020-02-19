@@ -1,4 +1,3 @@
-#include "flashscript.h"
 #include <QDebug>
 #include <QFile>
 #include <QString>
@@ -10,11 +9,13 @@
 #include "flashscript.h"
 #include "flashenv.h"
 
-flashScript::flashScript()
+flashScript::flashScript(QObject * parent)
+    :   QObject(parent)
 {
 }
 
-flashScript::flashScript(QString flashFilePath)
+flashScript::flashScript(QString flashFilePath, QObject * parent)
+    :   QObject(parent)
 {
     loadScriptFromFile(flashFilePath);
 }
@@ -92,6 +93,74 @@ bool flashScript::parse(flashEnv *env)
     }
 
     return (parsedScript.size() > 0);
+}
+
+
+bool flashScript::spawnProcess()
+{
+    QString cmdLine;
+
+    cmdLine = parsedScript[cmdIndex];
+    QStringList args = cmdLine.split(" ");
+    QString exe = args[0];
+    args.removeFirst();
+
+    qDebug() << "Executing command :" << cmdLine;
+    qDebug() << "exe=" << exe << " args :" << args;
+
+    process = new QProcess(this);
+
+
+    connect(process, &QProcess::started, [=]() {
+        cmdInProgress = true;
+        qDebug() << "Process started";
+//        emit commandStart(prgrmrIndex, command);
+    } );
+
+    connect(process,
+        QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+        [=](int exitCode, QProcess::ExitStatus exitStatus) {
+//            QString exitMsg = exitCodeToString(exitCode);
+//            qDebug() << "Process finished" << exitMsg << exitStatus;
+            qDebug() << "Process finished | code : " << exitCode << " status : " << exitStatus;
+
+            delete process;
+            process = nullptr;
+            cmdInProgress = false;
+
+            if (++cmdIndex < parsedScript.size()) {
+                qDebug() << "Execute next command :" << parsedScript[cmdIndex];
+                spawnProcess();
+            }
+//            emit commandEnd(prgrmrIndex, command);
+        }
+    );
+
+    connect(process, &QProcess::readyReadStandardOutput, [=]() {
+        QByteArray stdOut = process->readAllStandardOutput();
+        qDebug() << stdOut;
+//        emit statusText(prgrmrIndex, AtmelProgrammer::STREAM_STDOUT, stdOut);
+    });
+
+    connect(process, &QProcess::readyReadStandardError, [=]() {
+        QByteArray stdErr = process->readAllStandardError();
+        qDebug() << stdErr;
+//        emit statusText(prgrmrIndex, AtmelProgrammer::STREAM_STDERR, stdErr);
+    });
+
+    process->setProgram(exe);
+    process->setArguments(args);
+
+    process->start();
+
+    return process->waitForStarted();
+}
+
+void flashScript::execute()
+{
+    qDebug() << Q_FUNC_INFO;
+    cmdIndex = 0;
+    spawnProcess();
 }
 
 /**

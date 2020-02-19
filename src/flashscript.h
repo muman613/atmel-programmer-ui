@@ -2,14 +2,17 @@
 #define FLASHSCRIPT_H
 
 #include <QDebug>
+#include <QObject>
 #include <QString>
 #include <QStringList>
+#include <QProcess>
 #include "flashenv.h"
 
-class flashScript {
+class flashScript : public QObject {
+    Q_OBJECT
 public:
-    flashScript();
-    flashScript(QString flashFilePath);
+    flashScript(QObject * parent = nullptr);
+    flashScript(QString flashFilePath, QObject * parent = nullptr);
 
     bool        loadScriptFromFile(const QString & flashFilePath);
     bool        loadScriptFromString(const QString & script);
@@ -36,14 +39,26 @@ public:
     QByteArray      getScript() const;
     bool            parse(flashEnv *env);
 
+    void            execute();
+
+signals:
+    void            scriptStarted();
+    void            scriptCompleted();
+
 private:
     QString         parseScriptLine(const QString & line, flashEnv * env);
 
     bool            environContains(QObject * obj, QString propName);
 
+    bool            spawnProcess();
+
     QString         loadedPath;
     QStringList     script;
     QStringList     parsedScript;
+
+    bool            cmdInProgress   = false;
+    int             cmdIndex        = 0;
+    QProcess *      process         = nullptr;
 };
 
 #endif // FLASHSCRIPT_H

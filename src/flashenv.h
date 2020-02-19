@@ -13,6 +13,7 @@ class flashEnv : public QObject
     Q_PROPERTY(QString SN READ serial WRITE setSerial NOTIFY envChanged)
     Q_PROPERTY(QString DEVID READ device WRITE setDevice NOTIFY envChanged)
     Q_PROPERTY(QString IMAGE READ image WRITE setImage NOTIFY envChanged)
+    Q_PROPERTY(QString FUSES MEMBER m_fuses NOTIFY envChanged)
     Q_PROPERTY(QString VERBOSE MEMBER m_verbose NOTIFY envChanged)
 
 public:
@@ -95,6 +96,23 @@ public:
         return bVerbose;
     }
 
+    void setFuseH(quint8 value) {
+        m_fuseh = value;
+        formatFuse();
+    }
+    void setFuseL(quint8 value) {
+        m_fusel = value;
+        formatFuse();
+    }
+    void setFuseE(quint8 value) {
+        m_fusee = value;
+        formatFuse();
+    }
+
+    void formatFuse() {
+        m_fuses = QString("%1%2%3").arg(QString::number(m_fusel, 16).toUpper()).arg(QString::number(m_fuseh, 16).toUpper()).arg(QString::number(m_fusee, 16).toUpper());
+    }
+
 private:
     QString m_cmd;                  // 'atprogram.exe'
     QString m_tool;                 // atmelice/etc
@@ -103,6 +121,12 @@ private:
     QString m_device;               // device (atmega328p)
     QString m_fwPath;               // path to fw hex image
     QString m_verbose;              // Enable/Disable verbose output
+    QString m_fuses;
+
+    quint8  m_fuseh;
+    quint8  m_fusel;
+    quint8  m_fusee;
+
     bool    bVerbose = false;
 signals:
     void envChanged();
