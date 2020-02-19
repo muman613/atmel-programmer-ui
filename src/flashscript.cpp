@@ -62,7 +62,7 @@ bool flashScript::loadScriptFromString(const QString &script_string)
     qDebug() << Q_FUNC_INFO;
 
     clear();
-    script = script_string.split("\n");
+    script = script_string.trimmed().split("\n");
     return (script.size() > 0);
 }
 
@@ -95,7 +95,11 @@ bool flashScript::parse(flashEnv *env)
     return (parsedScript.size() > 0);
 }
 
-
+/**
+ * @brief Use QProcess to spawn a new process. Commands are stored in the
+ *        `parsedScript` QStringList
+ * @return
+ */
 bool flashScript::spawnProcess()
 {
     QString cmdLine;
@@ -112,9 +116,11 @@ bool flashScript::spawnProcess()
 
 
     connect(process, &QProcess::started, [=]() {
+        QString sId = QString("%1:%2").arg(scriptId).arg(cmdIndex + 1);
         cmdInProgress = true;
         qDebug() << "Process started";
 //        emit commandStart(prgrmrIndex, command);
+        emit scriptStarted(sId);
     } );
 
     connect(process,
@@ -124,10 +130,15 @@ bool flashScript::spawnProcess()
 //            qDebug() << "Process finished" << exitMsg << exitStatus;
             qDebug() << "Process finished | code : " << exitCode << " status : " << exitStatus;
 
+            QString sId = QString("%1:%2").arg(scriptId).arg(cmdIndex + 1);
+
+            emit scriptCompleted(sId);
+
             delete process;
             process = nullptr;
             cmdInProgress = false;
 
+            // If there are more commands in the list, then start them in order...
             if (++cmdIndex < parsedScript.size()) {
                 qDebug() << "Execute next command :" << parsedScript[cmdIndex];
                 spawnProcess();
@@ -156,11 +167,13 @@ bool flashScript::spawnProcess()
     return process->waitForStarted();
 }
 
-void flashScript::execute()
+void flashScript::execute(flashEnv * env)
 {
     qDebug() << Q_FUNC_INFO;
-    cmdIndex = 0;
-    spawnProcess();
+    if (parse(env)) {
+        cmdIndex = 0;
+        spawnProcess();
+    }
 }
 
 /**

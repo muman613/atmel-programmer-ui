@@ -39,11 +39,14 @@ public:
     QByteArray      getScript() const;
     bool            parse(flashEnv *env);
 
-    void            execute();
+    void            execute(flashEnv *env);
 
+    void            setId(int id) {
+        scriptId = id;
+    }
 signals:
-    void            scriptStarted();
-    void            scriptCompleted();
+    void            scriptStarted(QString ident);
+    void            scriptCompleted(QString ident);
 
 private:
     QString         parseScriptLine(const QString & line, flashEnv * env);
@@ -51,6 +54,8 @@ private:
     bool            environContains(QObject * obj, QString propName);
 
     bool            spawnProcess();
+
+    int             scriptId;
 
     QString         loadedPath;
     QStringList     script;

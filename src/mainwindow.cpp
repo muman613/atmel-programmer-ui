@@ -3,6 +3,7 @@
 #include <QSettings>
 #include <QMessageBox>
 #include <QTimer>
+#include <QStandardPaths>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "optiondialog.h"
@@ -18,16 +19,26 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    QTimer::singleShot(100, this, [=]() {
-        allocateProgrammers();
+    {
+        QTimer::singleShot(100, this, [=]() {
+            // check if the atprogram.exe is in the path
+//            if (QStandardPaths::findExecutable("atprogram.exe").isEmpty()) {
+//                QMessageBox::critical(this, "Critical Error",
+//                                      "'atprogram.exe' is not in the path");
+//                close();
+//                return;
+//            }
 
-        // If there are no AtmelICE programmers found, display message and quit...
-        if (programmers.size() == 0) {
-            QMessageBox::critical(this, "Critical Error",
-                                  "No Programmers Found");
-            close();
-        }
-    });
+            allocateProgrammers();
+
+            // If there are no AtmelICE programmers found, display message and quit...
+            if (programmers.size() == 0) {
+                QMessageBox::critical(this, "Critical Error",
+                                      "No Programmers Found");
+                close();
+            }
+        });
+    }
 }
 
 /**

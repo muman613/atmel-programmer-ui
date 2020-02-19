@@ -40,6 +40,7 @@ AtmelProgrammer::AtmelProgrammer(QObject *parent, int index)
       atProgramPath("atprogram.exe")
 {
     friendlyName = QString("Programmer #%1").arg(index + 1);
+    flash_script.setId(index + 1);
 }
 
 AtmelProgrammer::~AtmelProgrammer()
@@ -207,18 +208,29 @@ QByteArray AtmelProgrammer::getFlashScript() const
  */
 bool AtmelProgrammer::program()
 {
-    QStringList extraArgs;
-    qDebug() << Q_FUNC_INFO;
+    qDebug() << "executing flash script...";
 
-    extraArgs.append("-fl");        // Verify Flash memory
-    extraArgs.append("-e");
-    extraArgs.append("--verify");
-    extraArgs.append("-f");         // -f [filename]
-    extraArgs.append(fwPath);
+    flashEnv env;
 
-    if (executeCommand("program", &extraArgs)) {
+    // Set up the environment for variable replacement...
+    env.setCmd("atprogram.exe");
+    env.setTool(progTool);
+    env.setInterface(progIF);
+    env.setImage(fwPath);
+    env.setDevice(deviceId);
+    env.setSerial(progSN);
+    env.setVerbose(verbose);
 
-    }
+    // Connect-up the signal handler lambdas...
+    connect(&flash_script, &flashScript::scriptStarted, [=](QString sId) {
+        qDebug() << "lambda::scriptStarted(" << sId << ")";
+    });
+
+    connect(&flash_script, &flashScript::scriptCompleted, [=](QString sId) {
+        qDebug() << "lambda::scriptCompleted(" << sId << ")";
+    });
+
+    flash_script.execute(&env);
 
     return true;
 }
@@ -369,5 +381,5 @@ bool AtmelProgrammer::getProgrammerList(prgrmrPairList & prgrmrlist)
         }
     }
 
-    return (bool)(prgrmrlist.size() > 0);
+    return (prgrmrlist.size() > 0);
 }
