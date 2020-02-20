@@ -19,26 +19,24 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    {
-        QTimer::singleShot(100, this, [=]() {
-            // check if the atprogram.exe is in the path
-//            if (QStandardPaths::findExecutable("atprogram.exe").isEmpty()) {
-//                QMessageBox::critical(this, "Critical Error",
-//                                      "'atprogram.exe' is not in the path");
-//                close();
-//                return;
-//            }
+    QTimer::singleShot(100, this, [=]() {
+        // check if the atprogram.exe is in the path
+        if (QStandardPaths::findExecutable("atprogram.exe").isEmpty()) {
+            QMessageBox::critical(this, "Critical Error",
+                                  "'atprogram.exe' is not in the path");
+            close();
+            return;
+        }
 
-            allocateProgrammers();
+        allocateProgrammers();
 
-            // If there are no AtmelICE programmers found, display message and quit...
-            if (programmers.size() == 0) {
-                QMessageBox::critical(this, "Critical Error",
-                                      "No Programmers Found");
-                close();
-            }
-        });
-    }
+        // If there are no AtmelICE programmers found, display message and quit...
+        if (programmers.size() == 0) {
+            QMessageBox::critical(this, "Critical Error",
+                                  "No Programmers Found");
+            close();
+        }
+    });
 }
 
 /**
@@ -269,25 +267,36 @@ void MainWindow::on_actionSave_Console_to_file_triggered()
     }
 }
 
+/**
+ * @brief What to do when the about menu item is selected.
+ */
 void MainWindow::on_actionAbout_triggered()
 {
     QMessageBox::about(this, "Atmel Programmer",
                        "(C) 2020 Wunder-Bar\nProgrammer : Michael Uman");
 }
 
+/**
+ * @brief What to do when the user hits the program button.
+ */
 void MainWindow::on_programButton_clicked()
 {
+    // iterate through all programmers and call the programmers program function
     for (auto prgrmr : programmers) {
         int index           = prgrmr->index() + 1;
         QString grpbx       = QString("programmer%1").arg(index);
         QWidget * grpBox    = ui->centralwidget->findChild<QWidget*>(grpbx);
 
+        // disable each programmers groupbox
         grpBox->setEnabled(false);
 
         prgrmr->program();
     }
 }
 
+/**
+ * @brief What to do when the user hits the verify button.
+ */
 void MainWindow::on_verifyButton_clicked()
 {
     for (auto prgrmr : programmers) {
@@ -301,6 +310,9 @@ void MainWindow::on_verifyButton_clicked()
     }
 }
 
+/**
+ * @brief Allow user to select configuration file from the file dialog.
+ */
 void MainWindow::on_actionLoad_Configuration_triggered()
 {
     QFileDialog     chooseFile(this, "Select Firmware File");
@@ -348,10 +360,8 @@ void MainWindow::on_actionLoad_Configuration_triggered()
                 pWidget = grpBox->findChild<QWidget*>(fwPath);
                 static_cast<QLineEdit*>(pWidget)->setText((*optIter).fwPath);
 
-
                 qDebug() << grpBox;
             }
-//            qDebug() << opts;
         }
     }
 }
