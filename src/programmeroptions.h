@@ -6,6 +6,9 @@
 #include <QJsonObject>
 #include <QVector>
 
+/**
+ * @brief The programmerOptions class
+ */
 class programmerOptions {
 public:
     programmerOptions();
@@ -16,22 +19,23 @@ public:
     bool            loadOptionsFromObject(QJsonObject & obj);
     bool            saveOptionsToObject(QJsonObject & obj);
 
+    // Provided debug overload
     friend QDebug operator << (QDebug dbg, const programmerOptions & options);
 
-    QString         friendlyName;
-    QString         atProgramPath;
-    QString         fwPath;
-    QString         progTool;
-    QString         progIF;
-    QString         progSN;
-    QString         deviceId;
-    QString         fuseH;
-    QString         fuseL;
-    QString         fuseE;
-    QString         lockBits;
-    QByteArray      flashscript;
+    QString         friendlyName;   ///< Friendly name used when displayed
+    QString         atProgramPath;  ///< Path to the atprogram.exe
+    QString         fwPath;         ///< Path to the .hex image file
+    QString         progTool;       ///< -t Tool option for atprogram
+    QString         progIF;         ///< -i Interface option for atprogram
+    QString         progSN;         ///< -s Serial # of Atmelice programmer
+    QString         deviceId;       ///< -d Device id of target device
+    QString         fuseH;          ///< Fuse High Byte
+    QString         fuseL;          ///< Fuse Low Byte
+    QString         fuseE;          ///< Extended Fuse Byte
+    QString         lockBits;       ///< Lock bits
+    QByteArray      flashscript;    ///< Script text in a byte array
 
-    bool            verbose;
+    bool            verbose;        ///< -v Verbose option of atprogram
 };
 
 using optionVec = QVector<programmerOptions>;

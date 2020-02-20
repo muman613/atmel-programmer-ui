@@ -4,6 +4,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QJsonArray>
 #include <QDebug>
 #include "programmeroptions.h"
 
@@ -99,19 +100,62 @@ bool programmerOptions::loadOptionsFromObject(QJsonObject &obj)
     }
 
     if (obj.contains("script")) {
-        flashscript = obj["script"].toString().toLocal8Bit();
+        QJsonArray scriptArray = obj["script"].toArray();
+        QStringList p;
+
+        for (auto line : scriptArray) {
+            qDebug() << line.toString();
+            p.push_back(line.toString());
+        }
+
+        flashscript = p.join("\n").toLocal8Bit();
     }
 
     return true;
 }
 
+/**
+ * @brief Save the options to a JSON object.
+ *
+ * @param obj
+ * @return
+ */
 bool programmerOptions::saveOptionsToObject(QJsonObject &obj)
 {
-    Q_UNUSED(obj)
-    return false;
+    qDebug() << Q_FUNC_INFO;
+
+    obj["name"]         = friendlyName;
+    obj["atprogram"]    = atProgramPath;
+    obj["fw"]           = fwPath;
+    obj["tool"]         = progTool;
+    obj["if"]           = progIF;
+    obj["sn"]           = progSN;
+    obj["device"]       = deviceId;
+    obj["verbose"]      = verbose;
+
+//    QJsonArray scriptArray;
+
+//    obj["script"]       = QJsonArray( flashscript.split("\n");
+
+//    obj.insert("name",          QJsonValue(friendlyName));
+//    obj.insert("atprogram",     QJsonValue(atProgramPath));
+//    obj.insert("fw",            QJsonValue(fwPath));
+//    obj.insert("tool",          QJsonValue(progTool));
+//    obj.insert("if",            QJsonValue(progIF));
+//    obj.insert("sn",            QJsonValue(progSN));
+//    obj.insert("device",        QJsonValue(deviceId));
+//    obj.insert("verbose",       QJsonValue(verbose));
+//    obj.insert("script",        QJsonValue(QString(flashscript)));
+
+    return true;
 }
 
-
+/**
+ * @brief Load options f
+ * @param filePath
+ * @param option_vec
+ * @return
+ */
 bool loadOptionsFromJSON(const QString &filePath, optionVec &option_vec)
 {
     bool bResult = false;

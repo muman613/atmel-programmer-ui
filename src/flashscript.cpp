@@ -214,7 +214,7 @@ QString flashScript::parseScriptLine(const QString &line, flashEnv * env)
         }
     }
 
-    return newLine;
+    return newLine.simplified();
 }
 
 /**
