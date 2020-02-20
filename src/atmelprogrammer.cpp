@@ -29,6 +29,8 @@ static QStringList supportedDevices = {
     "atmega2560"
 };
 
+//static QStringList ss;
+
 /**
  * @brief AtmelProgrammer Constructor
  * @param parent
@@ -41,6 +43,27 @@ AtmelProgrammer::AtmelProgrammer(QObject *parent, int index)
 {
     friendlyName = QString("Programmer #%1").arg(index + 1);
     flash_script.setId(index + 1);
+
+    // Connect-up the signal handler lambdas...
+    connect(&flash_script, &flashScript::scriptStarted, [=](QString sId) {
+        QStringList items = sId.split(":");
+        int progId = items[0].toInt(),
+            cmdId  = items[1].toInt();
+
+        qDebug() << "lambda::scriptStarted(" << sId << ")";
+//        ss.push_back(sId);
+//        qDebug() << "pending scripts " << ss.size();
+        if (cmdId == 1) {
+            emit commandStart((progId - 1), "program");
+        }
+    });
+
+    connect(&flash_script, &flashScript::scriptCompleted, [=](QString sId) {
+        QStringList items = sId.split(":");
+        int progId = items[0].toInt();
+        qDebug() << "lambda::scriptCompleted(" << sId << ")";
+        emit commandEnd((progId - 1), "program");
+    });
 }
 
 AtmelProgrammer::~AtmelProgrammer()
@@ -221,15 +244,6 @@ bool AtmelProgrammer::program()
     env.setSerial(progSN);
     env.setVerbose(verbose);
 
-    // Connect-up the signal handler lambdas...
-    connect(&flash_script, &flashScript::scriptStarted, [=](QString sId) {
-        qDebug() << "lambda::scriptStarted(" << sId << ")";
-    });
-
-    connect(&flash_script, &flashScript::scriptCompleted, [=](QString sId) {
-        qDebug() << "lambda::scriptCompleted(" << sId << ")";
-    });
-
     flash_script.execute(&env);
 
     return true;
@@ -241,16 +255,23 @@ bool AtmelProgrammer::chiperase()
         qDebug() << "Programmer " << prgrmrIndex << " not configured!";
         return false;
     }
-
+#if 0
     if (executeCommand("chiperase")) {
         qDebug() << "OK";
     }
+#endif
 
     return true;
 }
 
 bool AtmelProgrammer::verify()
 {
+    if (!isConfigured()) {
+        qDebug() << "Programmer " << prgrmrIndex << " not configured!";
+        return false;
+    }
+
+#if 0
     QStringList extraArgs;
 
     extraArgs.append("-fl");        // Verify Flash memory
@@ -260,10 +281,12 @@ bool AtmelProgrammer::verify()
     if (executeCommand("verify", &extraArgs)) {
 
     }
+#endif
 
     return true;
 }
 
+#if 0
 /**
  * @brief Run the `atprogram.exe` programmer passing exta arguments.
  *
@@ -346,6 +369,7 @@ bool AtmelProgrammer::executeCommand(const QString &command, QStringList * extra
 
     return true;
 }
+#endif
 
 /**
  * @brief Use `atprogram.exe list` to get list of available programmers.

@@ -6,6 +6,7 @@
 #include <QRegularExpression>
 #include <QMetaProperty>
 
+#include "atmelprogrammer.h"
 #include "flashscript.h"
 #include "flashenv.h"
 
@@ -126,13 +127,15 @@ bool flashScript::spawnProcess()
     connect(process,
         QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
         [=](int exitCode, QProcess::ExitStatus exitStatus) {
-//            QString exitMsg = exitCodeToString(exitCode);
+            QString exitMsg = AtmelProgrammer::exitCodeToString(exitCode);
 //            qDebug() << "Process finished" << exitMsg << exitStatus;
-            qDebug() << "Process finished | code : " << exitCode << " status : " << exitStatus;
+            qDebug() << "Process finished | code : " << exitMsg << " status : " << exitStatus;
 
             QString sId = QString("%1:%2").arg(scriptId).arg(cmdIndex + 1);
 
-            emit scriptCompleted(sId);
+//            emit scriptCompleted(sId);
+
+            process->disconnect(process, 0, 0, 0);
 
             delete process;
             process = nullptr;
@@ -142,6 +145,8 @@ bool flashScript::spawnProcess()
             if (++cmdIndex < parsedScript.size()) {
                 qDebug() << "Execute next command :" << parsedScript[cmdIndex];
                 spawnProcess();
+            } else {
+                emit scriptCompleted(sId);
             }
 //            emit commandEnd(prgrmrIndex, command);
         }

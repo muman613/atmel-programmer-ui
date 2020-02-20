@@ -171,6 +171,8 @@ private:
 
     QProcess *      programmerProc = nullptr;
     QMutex          prgrmrMutex;
+
+    QStringList     scriptStatus;
 };
 
 #endif // ATMELPROGRAMMER_H
