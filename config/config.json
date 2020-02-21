@@ -7,6 +7,11 @@
         "if" : "JTAG",
         "device": "atmega162",
         "verbose" : false,
+        "fuses" : {
+            "H" : "0xF0",
+            "L" : "0xF1",
+            "E" : "0xF2"
+        },
         "script" : [
             "${CMD} ${VERBOSE} -t ${TOOL} -i ${IF} -s ${SN} -d ${DEVID} program -fl -f ${IMAGE} --verify",
             "${CMD} ${VERBOSE} -t ${TOOL} -i ${IF} -s ${SN} -d ${DEVID} write -fu --values ${FUSES} --verify"
@@ -20,6 +25,11 @@
         "if" : "JTAG",
         "device": "atmega162",
         "verbose" : false,
+        "fuses" : {
+            "H" : "0xF3",
+            "L" : "0xF4",
+            "E" : "0xF5"
+        },
         "script" : [
             "${CMD} ${VERBOSE} -t ${TOOL} -i ${IF} -s ${SN} -d ${DEVID} program -fl -f ${IMAGE} --verify",
             "${CMD} ${VERBOSE} -t ${TOOL} -i ${IF} -s ${SN} -d ${DEVID} write -fu --values ${FUSES} --verify"
@@ -33,6 +43,11 @@
         "if" : "JTAG",
         "device": "atmega1280",
         "verbose" : false,
+        "fuses" : {
+            "H" : "0xF6",
+            "L" : "0xF7",
+            "E" : "0xF8"
+        },
         "script" : [
             "${CMD} ${VERBOSE} -t ${TOOL} -i ${IF} -s ${SN} -d ${DEVID} program -fl -f ${IMAGE} --verify",
             "${CMD} ${VERBOSE} -t ${TOOL} -i ${IF} -s ${SN} -d ${DEVID} write -fu --values ${FUSES} --verify"

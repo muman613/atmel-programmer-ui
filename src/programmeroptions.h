@@ -42,5 +42,6 @@ using optionVec = QVector<programmerOptions>;
 
 
 bool loadOptionsFromJSON(const QString & filePath, optionVec & options);
+bool saveOptionsToJSON(const QString &filePath, const optionVec &option_vec);
 
 #endif // PROGRAMMEROPTIONS_H

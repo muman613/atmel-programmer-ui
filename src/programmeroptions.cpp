@@ -99,6 +99,22 @@ bool programmerOptions::loadOptionsFromObject(QJsonObject &obj)
         verbose = obj["verbose"].toBool();
     }
 
+    if (obj.contains("fuses")) {
+        qDebug() << "Found fuses";
+
+        QJsonObject fuseObj = obj["fuses"].toObject();
+
+        if (fuseObj.contains("H")) {
+            fuseH = fuseObj["H"].toString();
+        }
+        if (fuseObj.contains("L")) {
+            fuseL = fuseObj["L"].toString();
+        }
+        if (fuseObj.contains("E")) {
+            fuseE = fuseObj["E"].toString();
+        }
+    }
+
     if (obj.contains("script")) {
         QJsonArray scriptArray = obj["script"].toArray();
         QStringList p;
@@ -133,28 +149,30 @@ bool programmerOptions::saveOptionsToObject(QJsonObject &obj)
     obj["device"]       = deviceId;
     obj["verbose"]      = verbose;
 
-//    QJsonArray scriptArray;
+    obj["fuses"]        = QJsonObject{
+                            { "H", fuseH },
+                            { "L", fuseL },
+                            { "E", fuseE },
+                          };
 
-//    obj["script"]       = QJsonArray( flashscript.split("\n");
+    // Save the script lines as JSON array...
+    QJsonArray  scriptArray;
+    QStringList scriptLines = QString(flashscript).split("\n");
 
-//    obj.insert("name",          QJsonValue(friendlyName));
-//    obj.insert("atprogram",     QJsonValue(atProgramPath));
-//    obj.insert("fw",            QJsonValue(fwPath));
-//    obj.insert("tool",          QJsonValue(progTool));
-//    obj.insert("if",            QJsonValue(progIF));
-//    obj.insert("sn",            QJsonValue(progSN));
-//    obj.insert("device",        QJsonValue(deviceId));
-//    obj.insert("verbose",       QJsonValue(verbose));
-//    obj.insert("script",        QJsonValue(QString(flashscript)));
+    foreach(const QString & line, scriptLines) {
+        scriptArray.push_back(line);
+    }
+
+    obj["script"]       = scriptArray;
 
     return true;
 }
 
 /**
- * @brief Load options f
- * @param filePath
- * @param option_vec
- * @return
+ * @brief Load options from JSON configuration file.
+ * @param filePath - Path of file to load configuration from.
+ * @param option_vec - QVector of options found in the config file.
+ * @return true if file was loaded.
  */
 bool loadOptionsFromJSON(const QString &filePath, optionVec &option_vec)
 {
@@ -188,4 +206,35 @@ bool loadOptionsFromJSON(const QString &filePath, optionVec &option_vec)
     }
 
     return bResult;
+}
+
+/**
+ * @brief Save all programmer options to a JSON file.
+ * @param filePath - Path of file to save to.
+ * @param option_vec - Options stored in a QVector
+ * @return true
+ */
+bool saveOptionsToJSON(const QString &filePath, const optionVec &option_vec) {
+    QFile   configFile(filePath);
+
+    if (configFile.open(QIODevice::WriteOnly)) {
+        QJsonObject     root;
+        int             index = 1;
+
+        foreach(auto prgrmrOpt, option_vec) {
+            QJsonObject     programmerObj;
+            QString         sectionName = QString("programmer%1").arg(index++);
+
+            prgrmrOpt.saveOptionsToObject(programmerObj);
+
+            root.insert(sectionName, programmerObj);
+        }
+
+        QJsonDocument doc(root);
+        if (configFile.write(doc.toJson()) == -1) {
+            qWarning() << "Unable to save JSON configuration";
+        }
+    }
+
+    return true;
 }
