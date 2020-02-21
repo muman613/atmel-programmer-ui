@@ -51,8 +51,8 @@ AtmelProgrammer::AtmelProgrammer(QObject *parent, int index)
             cmdId  = items[1].toInt();
 
         qDebug() << "lambda::scriptStarted(" << sId << ")";
-//        ss.push_back(sId);
-//        qDebug() << "pending scripts " << ss.size();
+
+        // Send commandStart signal only on first command in sequence...
         if (cmdId == 1) {
             emit commandStart((progId - 1), "program");
         }
@@ -80,6 +80,7 @@ AtmelProgrammer::~AtmelProgrammer()
     iniSettings.setValue("ProgSN",      QVariant(progSN));
     iniSettings.setValue("bVerbose",    QVariant(verbose));
     iniSettings.setValue("friendlyName",QVariant(friendlyName));
+    iniSettings.setValue("fuses",       QVariant(getFuses()));
 
     QByteArray flScr = flash_script.getScript();
     iniSettings.setValue("flashScript", QVariant(flScr));
@@ -122,6 +123,8 @@ void AtmelProgrammer::initialize()
     progSN          = iniSettings.value("ProgSN").toString();
     verbose         = iniSettings.value("bVerbose",     false).toBool();
     friendlyName    = iniSettings.value("friendlyName", friendlyName).toString();
+
+    setFuses(iniSettings.value("fuses").toStringList());
 
     QByteArray flScr;
 
@@ -223,6 +226,36 @@ void AtmelProgrammer::setFlashScript(const QByteArray &script)
 QByteArray AtmelProgrammer::getFlashScript() const
 {
     return flash_script.getScript();
+}
+
+void AtmelProgrammer::setFuses(const QString &hFuse, const QString &lFuse, const QString &eFuse)
+{
+    if ((hFuse != fuseH) || (lFuse != fuseL) || (eFuse != fuseE)) {
+        fuseH = hFuse;
+        fuseL = lFuse;
+        fuseE = eFuse;
+
+        emit parmsChanged(prgrmrIndex);
+    }
+}
+
+void AtmelProgrammer::setFuses(const QStringList &fuselist)
+{
+    if (fuselist.size() == 3) {
+        setFuses(fuselist[0], fuselist[1], fuselist[2]);
+    } else {
+        qWarning() << "setFuses called with invalid # of elements in list";
+    }
+}
+
+/**
+ * @brief AtmelProgrammer::getFuses
+ * @return QStringList containing fuseH, fuseL, fuseE order.
+ */
+QStringList AtmelProgrammer::getFuses()
+{
+    QStringList fuseList = { fuseH, fuseL, fuseE };
+    return fuseList;
 }
 
 /**

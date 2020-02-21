@@ -37,6 +37,8 @@ FORMS += \
     src/mainwindow.ui \
     src/optiondlg.ui
 
+RC_ICONS = images/burn.ico
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin

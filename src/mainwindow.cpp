@@ -172,26 +172,28 @@ void MainWindow::allocateProgrammers()
                options.setVerbose(programmers[i]->getVerbose());
                options.setFriendlyName(programmers[i]->getFriendlyName());
                options.setFlashScript(programmers[i]->getFlashScript());
+               options.setFuses(programmers[i]->getFuses());
 
                if (options.exec()) {
                    programmers[i]->setInterface(options.getInterface());
                    programmers[i]->setVerbose(options.getVerbose());
                    programmers[i]->setFriendlyname(options.getFriendlyName());
                    programmers[i]->setFlashScript(options.getFlashScript());
+                   programmers[i]->setFuses(options.getFuses());
 
                    grpBox->setTitle(options.getFriendlyName());
                }
             });
 
-            connect(newPrgrmr, &AtmelProgrammer::statusText, [=](int index, AtmelProgrammer::streamId id,  QByteArray text) {
+            connect(newPrgrmr, &AtmelProgrammer::statusText, [=](int index, flashScript::streamId id,  QByteArray text) {
                 QString stream = QString(text).replace("\r", "").trimmed();
 
                 qDebug() << "Status Text :" << index << id << stream;
-                if (id == AtmelProgrammer::STREAM_STDERR) {
+                if (id == flashScript::STREAM_STDERR) {
                     ui->console->setFontWeight(QFont::Bold);
                 }
                 ui->console->append(stream);
-                if (id == AtmelProgrammer::STREAM_STDERR) {
+                if (id == flashScript::STREAM_STDERR) {
                     ui->console->setFontWeight(QFont::Normal);
                 }
             });

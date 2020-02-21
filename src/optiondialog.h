@@ -23,6 +23,11 @@ public:
     void setFlashScript(const QByteArray &  script);
     QByteArray getFlashScript() const;
 
+    void setFuses(const QString & fuseH, const QString & fuseL, const QString & fuseE);
+    void setFuses(const QStringList & fuseList);
+    void getFuses(QString & fuseH, QString & fuseL, QString & fuseE);
+    QStringList getFuses();
+
 private:
     Ui_optionDialog * ui = nullptr;
 

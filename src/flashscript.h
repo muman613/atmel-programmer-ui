@@ -8,9 +8,15 @@
 #include <QProcess>
 #include "flashenv.h"
 
+
 class flashScript : public QObject {
     Q_OBJECT
 public:
+    enum streamId {
+        STREAM_STDOUT,
+        STREAM_STDERR,
+    };
+
     flashScript(QObject * parent = nullptr);
     flashScript(QString flashFilePath, QObject * parent = nullptr);
 
@@ -47,6 +53,7 @@ public:
 signals:
     void            scriptStarted(QString ident);
     void            scriptCompleted(QString ident);
+    void            scriptOutput(int prgrmrID, streamId stream, QByteArray & data);
 
 private:
     QString         parseScriptLine(const QString & line, flashEnv * env);

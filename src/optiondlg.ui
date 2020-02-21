@@ -14,7 +14,7 @@
    <string>Option Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="0" column="1">
+   <item row="0" column="2">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -148,7 +148,7 @@
      </layout>
     </widget>
    </item>
-   <item row="1" column="0" colspan="2">
+   <item row="1" column="0" colspan="3">
     <widget class="QGroupBox" name="groupBox_2">
      <property name="title">
       <string>Flash Script</string>
@@ -160,8 +160,30 @@
      </layout>
     </widget>
    </item>
+   <item row="0" column="1">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>friendlyName</tabstop>
+  <tabstop>ifCombo</tabstop>
+  <tabstop>hfuse</tabstop>
+  <tabstop>lfuse</tabstop>
+  <tabstop>efuse</tabstop>
+  <tabstop>verboseCheck</tabstop>
+  <tabstop>flashScript</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

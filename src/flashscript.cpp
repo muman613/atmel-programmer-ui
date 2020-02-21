@@ -128,17 +128,14 @@ bool flashScript::spawnProcess()
         QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
         [=](int exitCode, QProcess::ExitStatus exitStatus) {
             QString exitMsg = AtmelProgrammer::exitCodeToString(exitCode);
-//            qDebug() << "Process finished" << exitMsg << exitStatus;
             qDebug() << "Process finished | code : " << exitMsg << " status : " << exitStatus;
 
             QString sId = QString("%1:%2").arg(scriptId).arg(cmdIndex + 1);
 
-//            emit scriptCompleted(sId);
-
-            process->disconnect(process, 0, 0, 0);
+            process->disconnect(process, nullptr, nullptr, nullptr);
 
             delete process;
-            process = nullptr;
+            process       = nullptr;
             cmdInProgress = false;
 
             // If there are more commands in the list, then start them in order...
@@ -148,20 +145,21 @@ bool flashScript::spawnProcess()
             } else {
                 emit scriptCompleted(sId);
             }
-//            emit commandEnd(prgrmrIndex, command);
         }
     );
+
+    /**
+     * NOTE: Connect the stream slots to forward streams to the programmer object.
+     */
 
     connect(process, &QProcess::readyReadStandardOutput, [=]() {
         QByteArray stdOut = process->readAllStandardOutput();
         qDebug() << stdOut;
-//        emit statusText(prgrmrIndex, AtmelProgrammer::STREAM_STDOUT, stdOut);
     });
 
     connect(process, &QProcess::readyReadStandardError, [=]() {
         QByteArray stdErr = process->readAllStandardError();
         qDebug() << stdErr;
-//        emit statusText(prgrmrIndex, AtmelProgrammer::STREAM_STDERR, stdErr);
     });
 
     process->setProgram(exe);
@@ -172,6 +170,10 @@ bool flashScript::spawnProcess()
     return process->waitForStarted();
 }
 
+/**
+ * @brief Begin execution of the flash script.
+ * @param env - Environment used to provide current variables.
+ */
 void flashScript::execute(flashEnv * env)
 {
     qDebug() << Q_FUNC_INFO;
@@ -201,7 +203,6 @@ QString flashScript::parseScriptLine(const QString &line, flashEnv * env)
 
         if (match.hasMatch()) {
             QString varName = match.captured(1);
-//          qDebug() << "matched" << varName;
             QString replaceStr = env->property(varName.toLocal8Bit().data()).toString();
             if (environContains(env, varName)) {
                 newLine.replace(match.capturedStart(0), match.capturedLength(0), replaceStr);

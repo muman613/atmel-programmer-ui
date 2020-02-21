@@ -24,11 +24,6 @@ class AtmelProgrammer : public QObject
     Q_OBJECT
 public:
 
-    enum streamId {
-        STREAM_STDOUT,
-        STREAM_STDERR,
-    };
-
     explicit AtmelProgrammer(QObject *parent = nullptr, int index = 0);
     ~AtmelProgrammer();
 
@@ -138,11 +133,15 @@ public:
     QByteArray      getFlashScript() const;
 
 
+    void            setFuses(const QString & hFuse, const QString & lFuse, const QString & eFuse);
+    void            setFuses(const QStringList & fuselist);
+    QStringList     getFuses(); // HLE order
+
 signals:
     void            commandStart(int index, QString command);
     void            commandEnd(int index, QString command);
     void            parmsChanged(int index);
-    void            statusText(int index, AtmelProgrammer::streamId id,  QByteArray text);
+    void            statusText(int index, flashScript::streamId id,  QByteArray text);
 
 private:
     int             prgrmrIndex = 0;
