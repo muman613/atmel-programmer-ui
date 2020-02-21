@@ -9,6 +9,7 @@
 #include "atmelprogrammer.h"
 #include "flashscript.h"
 #include "flashenv.h"
+#include "wundersplit.h"
 
 flashScript::flashScript(QObject * parent)
     :   QObject(parent)
@@ -106,7 +107,14 @@ bool flashScript::spawnProcess()
     QString cmdLine;
 
     cmdLine = parsedScript[cmdIndex];
-    QStringList args = cmdLine.split(" ");
+    QStringList args;
+    wunderSplit(cmdLine, args);
+
+    if (args.isEmpty()) {
+        qDebug() << "Failed to split command";
+        return false;
+    }
+
     QString exe = args[0];
     args.removeFirst();
 

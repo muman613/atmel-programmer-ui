@@ -317,7 +317,7 @@ void MainWindow::on_verifyButton_clicked()
  */
 void MainWindow::on_actionLoad_Configuration_triggered()
 {
-    QFileDialog     chooseFile(this, "Select Firmware File");
+    QFileDialog     chooseFile(this, "Load Configuration File...");
 
     chooseFile.setNameFilter(tr("JSON (*.json)"));
     chooseFile.setViewMode(QFileDialog::Detail);
@@ -325,9 +325,7 @@ void MainWindow::on_actionLoad_Configuration_triggered()
 
     if (chooseFile.exec()) {
         optionVec       opts;
-
-        QStringList FileNames = chooseFile.selectedFiles();
-        QString configPath = FileNames[0];
+        QString         configPath = chooseFile.selectedFiles()[0];
 
         if (loadOptionsFromJSON(configPath, opts)) {
             auto optIter = opts.begin();
@@ -370,5 +368,30 @@ void MainWindow::on_actionLoad_Configuration_triggered()
 
 void MainWindow::on_actionSave_Configuration_triggered()
 {
+    QFileDialog     chooseFile(this, "Save Configuration File As...");
 
+    chooseFile.setNameFilter(tr("JSON (*.json)"));
+    chooseFile.setViewMode(QFileDialog::Detail);
+    chooseFile.setFileMode(QFileDialog::AnyFile);
+    chooseFile.setAcceptMode(QFileDialog::AcceptSave);
+
+    if (chooseFile.exec()) {
+        optionVec       options;
+        QString         configName = chooseFile.selectedFiles()[0];
+
+        qDebug() << "Saving as" << configName;
+
+        foreach(auto  prgrmr, programmers) {
+            int index = prgrmr->index();
+
+            programmerOptions opts;
+
+            prgrmr->getProgrammerOptions(opts);
+            qDebug() << "programmer" << index << opts;
+
+            options.push_back(opts);
+        }
+
+        saveOptionsToJSON(configName, options);
+    }
 }

@@ -2,6 +2,7 @@
 #define FLASHENV_H
 
 #include <QObject>
+#include <QDebug>
 
 class flashEnv : public QObject
 {
@@ -109,6 +110,19 @@ public:
         formatFuse();
     }
 
+    void setFuses(const QStringList & fuseList) {
+        bool isok = false;
+        if (fuseList.size() == 3) {
+            m_fuseh = fuseList[0].toInt(&isok, 0);
+            m_fusel = fuseList[1].toInt(&isok, 0);
+            m_fusee = fuseList[2].toInt(&isok, 0);
+
+            formatFuse();
+        }
+    }
+
+    /* NOTE: The order for the fuses following --values is low/high/ext. */
+
     void formatFuse() {
         m_fuses = QString("%1%2%3").arg(QString::number(m_fusel, 16).toUpper()).arg(QString::number(m_fuseh, 16).toUpper()).arg(QString::number(m_fusee, 16).toUpper());
     }
@@ -123,9 +137,9 @@ private:
     QString m_verbose;              // Enable/Disable verbose output
     QString m_fuses;
 
-    quint8  m_fuseh;
-    quint8  m_fusel;
-    quint8  m_fusee;
+    int     m_fuseh;
+    int     m_fusel;
+    int     m_fusee;
 
     bool    bVerbose = false;
 signals:

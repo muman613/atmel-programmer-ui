@@ -23,35 +23,35 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
 
     switch (type) {
     case QtDebugMsg:
-        fprintf(fp, "%s - Debug   : %-30s | %-70s : %s\n",
+        fprintf(fp, "%s - Debug   : %-26s | %-76s : %s\n",
                 ts.toString().toLocal8Bit().constData(),
                 fileName.fileName().toLocal8Bit().constData(),
                 funcLine.toLocal8Bit().constData(),
                 localMsg.constData());
         break;
     case QtInfoMsg:
-        fprintf(fp, "%s - Info    : %-30s | %-70s : %s\n",
+        fprintf(fp, "%s - Info    : %-26s | %-76s : %s\n",
                 ts.toString().toLocal8Bit().constData(),
                 fileName.fileName().toLocal8Bit().constData(),
                 funcLine.toLocal8Bit().constData(),
                 localMsg.constData());
         break;
     case QtWarningMsg:
-        fprintf(fp, "%s - Warning : %-30s | %-70s : %s\n",
+        fprintf(fp, "%s - Warning : %-26s | %-76s : %s\n",
                 ts.toString().toLocal8Bit().constData(),
                 fileName.fileName().toLocal8Bit().constData(),
                 funcLine.toLocal8Bit().constData(),
                 localMsg.constData());
         break;
     case QtCriticalMsg:
-        fprintf(fp, "%s - Critical: %-30s | %-70s : %s\n",
+        fprintf(fp, "%s - Critical: %-26s | %-76s : %s\n",
                 ts.toString().toLocal8Bit().constData(),
                 fileName.fileName().toLocal8Bit().constData(),
                 funcLine.toLocal8Bit().constData(),
                 localMsg.constData());
         break;
     case QtFatalMsg:
-        fprintf(fp, "%s - Fatal   : %-30s | %-70s : %s\n",
+        fprintf(fp, "%s - Fatal   : %-26s | %-76s : %s\n",
                 ts.toString().toLocal8Bit().constData(),
                 fileName.fileName().toLocal8Bit().constData(),
                 funcLine.toLocal8Bit().constData(),

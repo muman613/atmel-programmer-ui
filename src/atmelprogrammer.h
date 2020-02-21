@@ -33,7 +33,8 @@ public:
 
     void            initialize();
 
-    void            setProgrammerOptions(programmerOptions & opts);
+    void            setProgrammerOptions(const programmerOptions & opts);
+    void            getProgrammerOptions(programmerOptions & opts);
 
     int             index() const {
         return prgrmrIndex;

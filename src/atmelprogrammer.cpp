@@ -140,7 +140,7 @@ void AtmelProgrammer::initialize()
  * @brief AtmelProgrammer::setProgrammerOptions
  * @param opts
  */
-void AtmelProgrammer::setProgrammerOptions(programmerOptions &opts)
+void AtmelProgrammer::setProgrammerOptions(const programmerOptions &opts)
 {
     qDebug() << "setProgrammerOptions :" << opts;
 
@@ -151,8 +151,29 @@ void AtmelProgrammer::setProgrammerOptions(programmerOptions &opts)
     friendlyName    = opts.friendlyName;
     fwPath          = opts.fwPath;
     verbose         = opts.verbose;
+    fuseH           = opts.fuseH;
+    fuseL           = opts.fuseL;
+    fuseE           = opts.fuseE;
 
     flash_script.loadScriptFromString(opts.flashscript);
+}
+
+void AtmelProgrammer::getProgrammerOptions(programmerOptions &opts)
+{
+    qDebug() << Q_FUNC_INFO;
+
+    opts.progTool       = progTool;
+    opts.deviceId       = deviceId;
+    opts.progIF         = progIF;
+    opts.progSN         = progSN;
+    opts.friendlyName   = friendlyName;
+    opts.fwPath         = fwPath;
+    opts.verbose        = verbose;
+    opts.fuseH          = fuseH;
+    opts.fuseL          = fuseL;
+    opts.fuseE          = fuseE;
+
+    opts.flashscript    = flash_script.getScript();
 }
 
 typedef struct _codeEntry {
@@ -276,6 +297,7 @@ bool AtmelProgrammer::program()
     env.setDevice(deviceId);
     env.setSerial(progSN);
     env.setVerbose(verbose);
+    env.setFuses(getFuses());
 
     flash_script.execute(&env);
 
