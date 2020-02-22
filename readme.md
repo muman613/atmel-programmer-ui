@@ -58,6 +58,20 @@ Here is a sample configuration JSON file:
 }
 ```
 
+### Flash Script Variables
+
+Several variables are replaced in the flash script when encountered.
+
+| Variable | Meaning |
+| -------- | ------- |
+| `${CMD}` | atprogram.exe. |
+| `${VERBOSE}` | Verbose setting from option dialog. |
+| `${TOOL}` | atprogram.exe -t tool option (*`atmelice`*). |
+| `${IF}` | atprogram.exe -i interface option from option dialog. |
+| `${SN}` | atprogram.exe -s serial # of atmelice programmer.
+| `${DEVID}` | atprogram.exe -d device identifier. |
+| `${IMAGE}` | Image file (`.hex`) to program flash with. |
+| `${FUSES}` | atprogram -fu --values fuse setting (l-h-e). |
 ## Screenshots
 
 ### Main Window
