@@ -8,7 +8,7 @@
         "device": "atmega162",
         "verbose" : false,
         "fuses" : {
-            "H" : "0xF0",
+            "H" : "0xF9",
             "L" : "0xF1",
             "E" : "0xF2"
         },

@@ -22,7 +22,8 @@ SOURCES += \
     src/atmelprogrammer.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
-    src/optiondialog.cpp
+    src/optiondialog.cpp \
+    src/wundersplit.cpp
 
 
 HEADERS += \
@@ -31,7 +32,8 @@ HEADERS += \
     src/programmeroptions.h \
     src/atmelprogrammer.h \
     src/mainwindow.h \
-    src/optiondialog.h
+    src/optiondialog.h \
+    src/wundersplit.h
 
 FORMS += \
     src/mainwindow.ui \
