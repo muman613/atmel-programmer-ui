@@ -1,5 +1,6 @@
 #include <QDebug>
 #include <QDialog>
+#include <QMessageBox>
 #include "optiondialog.h"
 #include "ui_optiondlg.h"
 
@@ -117,4 +118,46 @@ QStringList optionDialog::getFuses()
         ui->efuse->text(),
     };
     return fuseList;
+}
+
+void optionDialog::done(int r)
+{
+    qDebug() << Q_FUNC_INFO;
+
+    if (validFuses()) {
+        QDialog::done(r);
+    } else {
+        QMessageBox::warning(this, "Validation Error", "Invalid fuse settings");
+    }
+}
+
+bool optionDialog::validFuses() const
+{
+    QString HFuse, LFuse, EFuse;
+
+    HFuse = ui->hfuse->text();
+    LFuse = ui->lfuse->text();
+    EFuse = ui->efuse->text();
+
+    bool bOk = false;
+
+    HFuse.toInt(&bOk, 0);
+    if (!bOk) {
+        qDebug() << "Invalid HFuse!";
+        return false;
+    }
+
+    LFuse.toInt(&bOk, 0);
+    if (!bOk) {
+        qDebug() << "Invalid LFuse!";
+        return false;
+    }
+
+    EFuse.toInt(&bOk, 0);
+    if (!bOk) {
+        qDebug() << "Invalid EFuse!";
+        return false;
+    }
+
+    return true;
 }

@@ -28,7 +28,11 @@ public:
     void getFuses(QString & fuseH, QString & fuseL, QString & fuseE);
     QStringList getFuses();
 
+    void done(int r) override;
+
 private:
+    bool            validFuses() const;
+
     Ui_optionDialog * ui = nullptr;
 
 };

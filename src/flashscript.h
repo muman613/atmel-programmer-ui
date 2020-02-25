@@ -8,7 +8,11 @@
 #include <QProcess>
 #include "flashenv.h"
 
+#define LOG_COMMANDS        1
 
+/**
+ * @brief The flashScript class
+ */
 class flashScript : public QObject {
     Q_OBJECT
 public:
@@ -50,6 +54,7 @@ public:
     void            setId(int id) {
         scriptId = id;
     }
+
 signals:
     void            scriptStarted(QString ident);
     void            scriptCompleted(QString ident);
@@ -57,10 +62,11 @@ signals:
 
 private:
     QString         parseScriptLine(const QString & line, flashEnv * env);
-
     bool            environContains(QObject * obj, QString propName);
-
     bool            spawnProcess();
+#ifdef LOG_COMMANDS
+    void            logCommand(const QString & cmd, const QStringList & args) const;
+#endif
 
     int             scriptId;
 

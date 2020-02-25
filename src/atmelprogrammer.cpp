@@ -64,6 +64,11 @@ AtmelProgrammer::AtmelProgrammer(QObject *parent, int index)
         qDebug() << "lambda::scriptCompleted(" << sId << ")";
         emit commandEnd((progId - 1), "program");
     });
+
+    connect(&flash_script, &flashScript::scriptOutput, [=](int prgrmrID, flashScript::streamId stream, QByteArray & data) {
+        qDebug() << Q_FUNC_INFO << "|" << prgrmrID << stream << data;
+        emit statusText(prgrmrID, stream, data);
+    });
 }
 
 AtmelProgrammer::~AtmelProgrammer()

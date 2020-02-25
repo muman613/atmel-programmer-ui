@@ -163,20 +163,48 @@ bool flashScript::spawnProcess()
     connect(process, &QProcess::readyReadStandardOutput, [=]() {
         QByteArray stdOut = process->readAllStandardOutput();
         qDebug() << stdOut;
+        emit scriptOutput(scriptId, flashScript::STREAM_STDOUT, stdOut);
     });
 
     connect(process, &QProcess::readyReadStandardError, [=]() {
         QByteArray stdErr = process->readAllStandardError();
         qDebug() << stdErr;
+        emit scriptOutput(scriptId, flashScript::STREAM_STDERR, stdErr);
     });
 
     process->setProgram(exe);
     process->setArguments(args);
 
+#ifdef LOG_COMMANDS
+    logCommand(exe, args);
+#endif
+
     process->start();
 
     return process->waitForStarted();
 }
+
+#ifdef LOG_COMMANDS
+#define LOGFILE_PATHNAME "command.log"
+
+void flashScript::logCommand(const QString &cmd, const QStringList &args) const
+{
+    QFile logFile(LOGFILE_PATHNAME);
+    qDebug() << Q_FUNC_INFO;
+
+    if (logFile.open(QIODevice::WriteOnly|QIODevice::Append)) {
+        QString cmdLine = cmd;
+
+        foreach(QString arg, args) {
+            cmdLine += " " + arg;
+        }
+
+        cmdLine += "\n";
+
+        logFile.write(cmdLine.toLocal8Bit());
+    }
+}
+#endif
 
 /**
  * @brief Begin execution of the flash script.

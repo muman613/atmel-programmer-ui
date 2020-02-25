@@ -188,6 +188,8 @@ void MainWindow::allocateProgrammers()
             connect(newPrgrmr, &AtmelProgrammer::statusText, [=](int index, flashScript::streamId id,  QByteArray text) {
                 QString stream = QString(text).replace("\r", "").trimmed();
 
+                stream = QString("%1 - %2").arg(index).arg(stream);
+
                 qDebug() << "Status Text :" << index << id << stream;
                 if (id == flashScript::STREAM_STDERR) {
                     ui->console->setFontWeight(QFont::Bold);
