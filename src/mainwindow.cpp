@@ -35,6 +35,9 @@ MainWindow::MainWindow(QWidget *parent)
             QMessageBox::critical(this, "Critical Error",
                                   "No Programmers Found");
             close();
+        } else if (programmers.size() < 3) {
+            QMessageBox::warning(this, "Warning",
+                                 "Tool requires 3 programmers");
         }
     });
 }
