@@ -191,23 +191,27 @@ void MainWindow::allocateProgrammers()
             connect(newPrgrmr, &AtmelProgrammer::statusText, [=](int index, flashScript::streamId id,  QByteArray text) {
                 QString stream = QString(text).replace("\r", "").trimmed();
 
-                stream = QString("%1 - %2").arg(index).arg(stream);
 
                 qDebug() << "Status Text :" << index << id << stream;
                 if (id == flashScript::STREAM_STDERR) {
                     ui->console->setFontWeight(QFont::Bold);
                 }
-                ui->console->append(stream);
+                QStringList lines = stream.split("\n");
+                foreach (const QString & line, lines) {
+                    QString format = QString("%1 - %2").arg(index).arg(line);
+                    ui->console->append(format);
+                }
                 if (id == flashScript::STREAM_STDERR) {
                     ui->console->setFontWeight(QFont::Normal);
                 }
             });
 
             connect(newPrgrmr, &AtmelProgrammer::commandStart, [=](int ndx, QString command) {
+                QString friendlyName = this->programmers[ndx]->getFriendlyName();
                 qDebug() << "Command Started :" << ndx + 1 << command;
                 enableProgrammer(ndx, false);
 
-                QString sMsg = QString("Started '%1' of programmer %2").arg(command).arg(ndx + 1);
+                QString sMsg = QString("Started '%1' of programmer '%2'").arg(command).arg(friendlyName);
                 ui->console->append(sMsg);
 
                 busyPrgmCnt++;
@@ -218,10 +222,11 @@ void MainWindow::allocateProgrammers()
             });
 
             connect(newPrgrmr, &AtmelProgrammer::commandEnd, [=](int ndx, QString command) {
+                QString friendlyName = this->programmers[ndx]->getFriendlyName();
                 qDebug() << "Command Ended :" << ndx + 1 << command;
                 enableProgrammer(ndx, true);
 
-                QString sMsg = QString("Ended '%1' of programmer %2").arg(command).arg(ndx + 1);
+                QString sMsg = QString("Ended '%1' of programmer '%2'").arg(command).arg(friendlyName);
                 ui->console->append(sMsg);
                 busyPrgmCnt--;
                 if (busyPrgmCnt == 0) {
@@ -292,12 +297,14 @@ void MainWindow::on_programButton_clicked()
     for (auto prgrmr : programmers) {
         int index           = prgrmr->index() + 1;
         QString grpbx       = QString("programmer%1").arg(index);
+        QString enabled     = QString("enabled_%1").arg(index);
         QWidget * grpBox    = ui->centralwidget->findChild<QWidget*>(grpbx);
+        QCheckBox * chkBox  = ui->centralwidget->findChild<QCheckBox*>(enabled);
 
-        // disable each programmers groupbox
-        grpBox->setEnabled(false);
-
-        prgrmr->program();
+        if (chkBox->isChecked()) {
+            // disable each programmers groupbox
+            prgrmr->program();
+        }
     }
 }
 
