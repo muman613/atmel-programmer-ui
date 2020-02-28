@@ -298,8 +298,10 @@ void MainWindow::on_programButton_clicked()
         int index           = prgrmr->index() + 1;
         QString grpbx       = QString("programmer%1").arg(index);
         QString enabled     = QString("enabled_%1").arg(index);
-        QWidget * grpBox    = ui->centralwidget->findChild<QWidget*>(grpbx);
+//        QWidget * grpBox    = ui->centralwidget->findChild<QWidget*>(grpbx);
         QCheckBox * chkBox  = ui->centralwidget->findChild<QCheckBox*>(enabled);
+
+        Q_ASSERT(chkBox != nullptr);
 
         if (chkBox->isChecked()) {
             // disable each programmers groupbox
