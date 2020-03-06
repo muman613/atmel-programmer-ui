@@ -8,6 +8,7 @@
 #include "ui_mainwindow.h"
 #include "optiondialog.h"
 #include "programmeroptions.h"
+#include "help.h"
 
 /**
  * @brief MainWindow Constructor
@@ -18,6 +19,19 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    // Check if the help file is available, if not disable help menu option...
+    if (!QFile::exists(HELPFILENAME)) {
+        QList<QMenu *> menu = ui->menubar->findChildren<QMenu*>("menu_Help");
+
+        foreach(QAction * act, menu[0]->actions()) {
+            if (act->objectName() == HELPMENU) {
+                qDebug() << "Found menu" << act->text();
+                act->setEnabled(false);
+                ui->console->append("QtHelp not available!");
+            }
+        }
+    }
 
     QTimer::singleShot(100, this, [=]() {
         // check if the atprogram.exe is in the path
@@ -428,7 +442,8 @@ void MainWindow::on_actionMulti_Programmer_Help_triggered()
 
     helpProcess = new QProcess(this);
 
-    QString     helpFilename = QGuiApplication::applicationDirPath() + QDir::separator() + "programmer.qhc";
+    QString     helpFilename = QGuiApplication::applicationDirPath() +
+                               QDir::separator() + HELPFILENAME;
 
     QStringList args;
 

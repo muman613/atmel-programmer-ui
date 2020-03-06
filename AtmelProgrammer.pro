@@ -29,6 +29,7 @@ SOURCES += \
 HEADERS += \
     src/flashenv.h \
     src/flashscript.h \
+    src/help.h \
     src/programmeroptions.h \
     src/atmelprogrammer.h \
     src/mainwindow.h \
