@@ -42,6 +42,12 @@ FORMS += \
 
 RC_ICONS = images/burn.ico
 
+OTHER_FILES =   qtinstaller/config/config.xml \
+                qtinstaller/packages/com.wunderbar.multiprogrammer/meta/package.xml \
+                qtinstaller/packages/com.wunderbar.multiprogrammer/meta/installscript.qs \
+                qtinstaller/packages/com.wunderbar.multiprogrammer/meta/license.txt \
+
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin

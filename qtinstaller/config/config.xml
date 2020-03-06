@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+    <Name>Multi-Programmer</Name>
+    <Version>1.0.0</Version>
+    <Title>Wunderbar Multi-Programmer</Title>
+    <Publisher>Wunderbar</Publisher>
+    <StartMenuDir>Multi-Programmer</StartMenuDir>
+    <TargetDir>@HomeDir@/Multiprogrammer</TargetDir>
+    <RunProgram>@HomeDir@/Multiprogrammer/AtmelProgrammer.exe</RunProgram>
+    <MaintenanceToolName>Uninstall-Multiprogrammer</MaintenanceToolName>
+</Installer>
