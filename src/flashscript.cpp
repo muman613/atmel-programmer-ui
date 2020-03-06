@@ -108,7 +108,8 @@ bool flashScript::spawnProcess()
 
     cmdLine = parsedScript[cmdIndex];
     QStringList args;
-    wunderSplit(cmdLine, args);
+
+    wunderSplit(cmdLine, args); // preseve spaces in quoted string...
 
     if (args.isEmpty()) {
         qDebug() << "Failed to split command";
@@ -128,7 +129,6 @@ bool flashScript::spawnProcess()
         QString sId = QString("%1:%2").arg(scriptId).arg(cmdIndex + 1);
         cmdInProgress = true;
         qDebug() << "Process started";
-//        emit commandStart(prgrmrIndex, command);
         emit scriptStarted(sId);
     } );
 
@@ -136,7 +136,7 @@ bool flashScript::spawnProcess()
         QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
         [=](int exitCode, QProcess::ExitStatus exitStatus) {
             QString exitMsg = AtmelProgrammer::exitCodeToString(exitCode);
-            qDebug() << "Process finished | code : " << exitMsg << " status : " << exitStatus;
+            qDebug() << "Process finished | code : " << exitCode << ":" << exitMsg << " status : " << exitStatus;
 
             QString sId = QString("%1:%2").arg(scriptId).arg(cmdIndex + 1);
 
@@ -147,10 +147,19 @@ bool flashScript::spawnProcess()
             cmdInProgress = false;
 
             // If there are more commands in the list, then start them in order...
-            if (++cmdIndex < parsedScript.size()) {
-                qDebug() << "Execute next command :" << parsedScript[cmdIndex];
-                spawnProcess();
+            if (exitCode == 0) {
+                if (++cmdIndex < parsedScript.size()) {
+                    qDebug() << "Execute next command :" << parsedScript[cmdIndex];
+                    spawnProcess();
+                } else {
+                    emit scriptCompleted(sId);
+                }
             } else {
+                qDebug() << "Command exited with exitCode != 0!";
+
+                QByteArray sMsg = QString("Aborting script 'atprogram.exe' returned : %1").arg(exitMsg).toLocal8Bit();
+
+                emit scriptOutput(scriptId, flashScript::STREAM_STDERR, sMsg);
                 emit scriptCompleted(sId);
             }
         }
