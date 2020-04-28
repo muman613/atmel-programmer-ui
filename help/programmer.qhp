@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QtHelpProject version="1.0">
+    <namespace>wunderbar.multi.programmer</namespace>
+    <virtualFolder>doc</virtualFolder>
+    <filterSection>
+        <toc>
+            <section title="Wunderbar Multi Programmer Help" ref="index.html">
+                <section title="Overview" ref="overview.html"></section>
+                <section title="Reference Manual" ref="reference.html">
+                    <section title="Programmer Reference" ref="programmer.html"></section>
+                    <section title="RSD 156 Reference" ref="RSD_156.html">
+                        <section title="Connecting Programmer to Device" ref="rsd_156_connection.html"></section>
+                        <section title="Configuring Wunderbar Multi-Programmer" ref="rsd_156_config.html"></section>
+                    </section>
+
+                </section>
+            </section>
+        </toc>
+        <keywords>
+            <keyword name="Atmel ICE" ref="./atmelice.html"/>
+        </keywords>
+        <files>
+            <file>index.html</file>
+            <file>overview.html</file>
+            <file>reference.html</file>
+            <file>atmelice.html</file>
+            <file>mainwindow.png</file>
+            <file>reference.html</file>
+            <file>programmer.html</file>
+            <file>RSD_156.html</file>
+            <file>rsd_156_topdown.png</file>
+            <file>rsd_156_config.html</file>
+            <file>rsd_156_connection.html</file>
+            <file>rsd_156_j10.png</file>
+            <file>rsd_156_j13-j14.png</file>
+            <file>Atmel-ICE-image.png</file>
+        </files>
+    </filterSection>
+</QtHelpProject>

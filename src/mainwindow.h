@@ -34,6 +34,8 @@ private slots:
 
     void on_actionSave_Configuration_triggered();
 
+    void on_actionMulti_Programmer_Help_triggered();
+
 protected:
 
     bool                getProgrammerList();
@@ -46,5 +48,7 @@ private:
     prgrmrVec           programmers;
     prgrmrPairList      programmerList;
     int                 busyPrgmCnt = 0;
+
+    QProcess *          helpProcess = nullptr;
 };
 #endif // MAINWINDOW_H

@@ -8,6 +8,7 @@
 #include "ui_mainwindow.h"
 #include "optiondialog.h"
 #include "programmeroptions.h"
+#include "help.h"
 
 /**
  * @brief MainWindow Constructor
@@ -18,6 +19,19 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    // Check if the help file is available, if not disable help menu option...
+    if (!QFile::exists(HELPFILENAME)) {
+        QList<QMenu *> menu = ui->menubar->findChildren<QMenu*>("menu_Help");
+
+        foreach(QAction * act, menu[0]->actions()) {
+            if (act->objectName() == HELPMENU) {
+                qDebug() << "Found menu" << act->text();
+                act->setEnabled(false);
+                ui->console->append("QtHelp not available!");
+            }
+        }
+    }
 
     QTimer::singleShot(100, this, [=]() {
         // check if the atprogram.exe is in the path
@@ -407,5 +421,41 @@ void MainWindow::on_actionSave_Configuration_triggered()
         }
 
         saveOptionsToJSON(configName, options);
+    }
+}
+
+void MainWindow::on_actionMulti_Programmer_Help_triggered()
+{
+    qDebug() << Q_FUNC_INFO;
+
+    qDebug() << "help process" << helpProcess;
+
+    if (helpProcess != nullptr) {
+        if (helpProcess->state() == QProcess::Running) {
+            qDebug() << "Killing running process";
+            helpProcess->kill();
+        }
+        qDebug() << "deleting process";
+        delete helpProcess;
+        helpProcess = nullptr;
+    }
+
+    helpProcess = new QProcess(this);
+
+    QString     helpFilename = QGuiApplication::applicationDirPath() +
+                               QDir::separator() + HELPFILENAME;
+
+    QStringList args;
+
+    args.append("-collectionFile");
+    args.append(helpFilename);
+
+    helpProcess->setProgram("assistant.exe");
+    helpProcess->setArguments(args);
+
+    helpProcess->start();
+
+    if (!helpProcess->waitForStarted()) {
+        qDebug() << "Assistant has not started!";
     }
 }

@@ -304,6 +304,7 @@
      <string>&amp;Help</string>
     </property>
     <addaction name="actionAbout"/>
+    <addaction name="actionMulti_Programmer_Help"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
@@ -338,6 +339,11 @@
   <action name="actionSave_Configuration">
    <property name="text">
     <string>Save Configuration...</string>
+   </property>
+  </action>
+  <action name="actionMulti_Programmer_Help">
+   <property name="text">
+    <string>Multi-Programmer Help...</string>
    </property>
   </action>
  </widget>
